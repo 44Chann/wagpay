@@ -1,4 +1,4 @@
-import { ethers } from 'https://cors-anywhere.herokuapp.com/https://cdn.ethers.io/lib/ethers-5.2.esm.min.js'
+import { ethers } from 'https://cdn.ethers.io/lib/ethers-5.2.esm.min.js'
 
 !function() {
 	var me = document.querySelector('script[data-amount]');
