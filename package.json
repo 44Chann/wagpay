@@ -7,5 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^1.30.0",
+    "ethers": "^5.5.4",
+    "uuid-by-string": "^3.0.6",
+    "web3-token": "^0.2.7"
+  }
 }

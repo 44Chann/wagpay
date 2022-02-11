@@ -20,7 +20,10 @@
   "dependencies": {
     "@solana/pay": "^0.1.1",
     "@solana/web3.js": "^1.33.0",
+    "@walletconnect/node": "^1.0.0",
+    "@walletconnect/qrcode-modal": "^1.7.1",
     "browser-resolve": "^2.0.0",
-    "ethers": "^5.5.4"
+    "ethers": "^5.5.4",
+    "web3modal": "^1.9.5"
   }
 }

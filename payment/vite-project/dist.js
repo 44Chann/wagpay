@@ -53947,51 +53947,102 @@
     	merchantSol;
     	solConnection;
 
-    	constructor(window, merchantEth, merchantSol) {
-    		this.window = window;
-    		this.ethProvider = new Web3Provider(this.window.ethereum);
-    		this.signer = this.ethProvider.getSigner();
+    	constructor(window, merchantEth, merchantSol, currency, wallet) {
+    		try {
+    			this.window = window;
+    	
+    			this.merchantEth = merchantEth;
+    			this.merchantSol = merchantSol;
 
-    		
-    		this.merchantEth = merchantEth;
-    		this.merchantSol = merchantSol;
+    			this.currency = currency;
+    			this.wallet = wallet;
+    		} catch (e) {
+    			console.log("WagPay: Can't initialize WagPay, check if you are passing params correctly!");
+    		}
+    	}
+
+    	connectEth = async () => {
+    		if(this.wallet.toUpperCase() === 'METAMASK') this.connectMetamask();
+    		else throw("No Wallet Exists!")
     	}
     	
+    	connectMetamask = async () => {
+    		try {
+    			const { ethereum } = this.window;
+    		
+    			if (ethereum) {
+    				const accounts = await ethereum.request({
+    					method: "eth_requestAccounts",
+    				});
+    		
+    				if (accounts.length !== 0) {
+    					console.log(accounts);
+    					return accounts[0]
+    					console.log("Found");
+    				} else {
+    					console.log("Not Found");
+    				}
+    				
+    				this.ethProvider = new Web3Provider(window.ethereum);
+    				this.signer = new this.ethProvider.Signer();
+    			} else {
+    				console.log("Install Metamask");
+    			}
+    		} catch (e) {
+    			console.log(e);
+    		}
+    	}
+    	
+    	connectSol = async () => {
+    		try {
+    			await this.window.solana.connect();
+    			return this.window.solana.publicKey
+    		} catch (e) {
+    			console.log(e);
+    		}
+    	} 
+    	
     	sendEthTransaction = async (value) => {
-    		const tx = await this.signer.sendTransaction({
-    			to: this.merchantEth,
-    			value: parseEther(value)
-    		});
-
-    		return tx.hash
+    		try {
+    			const tx = await this.signer.sendTransaction({
+    				to: this.merchantEth,
+    				value: parseEther(value)
+    			});
+    	
+    			return tx.hash
+    		} catch (e) {
+    			console.log("WagPay: Can't send transaction!");
+    		}
     	}
 
     	sendSolTransaction = async (value) => {
-    		await this.window.solana.connect();
-    		this.solProvider = this.window.solana;
-    		this.solConnection = new Connection(clusterApiUrl('devnet'));
-    		
-    		var transaction = new Transaction().add(
-    			SystemProgram.transfer({
-    				fromPubkey: this.solProvider.publicKey,
-    				toPubkey: new PublicKey(this.merchantSol),
-    				lamports: value * LAMPORTS_PER_SOL
-    			})
-    		);
-
-    		transaction.feePayer = await this.solProvider.publicKey;
-    		let blockhashObj = await this.solConnection.getRecentBlockhash();
-    		transaction.recentBlockhash = await blockhashObj.blockhash;
-
-    		if(transaction) {
-    			console.log("Txn created successfully");
+    		try {
+    			this.solProvider = this.window.solana;
+    			this.solConnection = new Connection(clusterApiUrl('devnet'));
+    			
+    			var transaction = new Transaction().add(
+    				SystemProgram.transfer({
+    					fromPubkey: this.solProvider.publicKey,
+    					toPubkey: new PublicKey(this.merchantSol),
+    					lamports: value * LAMPORTS_PER_SOL
+    				})
+    			);
+    	
+    			transaction.feePayer = await this.solProvider.publicKey;
+    			let blockhashObj = await this.solConnection.getRecentBlockhash();
+    			transaction.recentBlockhash = await blockhashObj.blockhash;
+    	
+    			if(transaction) {
+    				console.log("Txn created successfully");
+    			}
+    			
+    			let signed = await this.solProvider.signTransaction(transaction);
+    			let signature = await this.solConnection.sendRawTransaction(signed.serialize());
+    			await this.solConnection.confirmTransaction(signature);
+    			return signature
+    		} catch (e) {
+    			console.log("WagPay: Can't send transaction!");
     		}
-    		
-    		let signed = await this.solProvider.signTransaction(transaction);
-    		let signature = await this.solConnection.sendRawTransaction(signed.serialize());
-    		await this.solConnection.confirmTransaction(signature);
-
-    		console.log("Signature: ", signature);
     	}
     }
 
@@ -54006,6 +54057,10 @@
     	let button0;
     	let t1;
     	let button1;
+    	let t3;
+    	let button2;
+    	let t5;
+    	let button3;
     	let mounted;
     	let dispose;
 
@@ -54017,6 +54072,12 @@
     			t1 = space();
     			button1 = element("button");
     			button1.textContent = "Solana";
+    			t3 = space();
+    			button2 = element("button");
+    			button2.textContent = "Connect Eth";
+    			t5 = space();
+    			button3 = element("button");
+    			button3.textContent = "Connect Sol";
     			attr(main, "class", "svelte-1fm71xa");
     		},
     		m(target, anchor) {
@@ -54024,11 +54085,17 @@
     			append(main, button0);
     			append(main, t1);
     			append(main, button1);
+    			append(main, t3);
+    			append(main, button2);
+    			append(main, t5);
+    			append(main, button3);
 
     			if (!mounted) {
     				dispose = [
-    					listen(button0, "click", /*click_handler*/ ctx[2]),
-    					listen(button1, "click", /*click_handler_1*/ ctx[3])
+    					listen(button0, "click", /*click_handler*/ ctx[5]),
+    					listen(button1, "click", /*click_handler_1*/ ctx[6]),
+    					listen(button2, "click", /*click_handler_2*/ ctx[7]),
+    					listen(button3, "click", /*click_handler_3*/ ctx[8])
     				];
 
     				mounted = true;
@@ -54045,26 +54112,52 @@
     	};
     }
 
-    function instance($$self) {
-    	const wag = new WagPay(window, '0x444A900d6CC95F8d4568cB6e3096f518B9606294', '4PiUQB8z7iMRyJLRo3A9Tth9UDGzXuDaQ9kNhVewuSiQ');
+    function instance($$self, $$props, $$invalidate) {
+    	const wag = new WagPay(window, '0x444A900d6CC95F8d4568cB6e3096f518B9606294', '4PiUQB8z7iMRyJLRo3A9Tth9UDGzXuDaQ9kNhVewuSiQ', '', 'metamask');
+    	let { value } = $$props;
+
+    	const connectSol = async () => {
+    		await wag.connectSol();
+    	};
+
+    	const connectEth = async () => {
+    		wag.connectEth();
+    	};
 
     	const payEther = () => {
-    		wag.sendEthTransaction('0.01');
+    		wag.sendEthTransaction(value);
     	};
 
     	const paySol = () => {
-    		wag.sendSolTransaction(1);
+    		wag.sendSolTransaction(Number(value));
     	};
 
     	const click_handler = () => payEther();
     	const click_handler_1 = () => paySol();
-    	return [payEther, paySol, click_handler, click_handler_1];
+    	const click_handler_2 = () => connectEth();
+    	const click_handler_3 = () => connectSol();
+
+    	$$self.$$set = $$props => {
+    		if ('value' in $$props) $$invalidate(4, value = $$props.value);
+    	};
+
+    	return [
+    		connectSol,
+    		connectEth,
+    		payEther,
+    		paySol,
+    		value,
+    		click_handler,
+    		click_handler_1,
+    		click_handler_2,
+    		click_handler_3
+    	];
     }
 
     class App extends SvelteComponent {
     	constructor(options) {
     		super();
-    		init(this, options, instance, create_fragment, safe_not_equal, {}, add_css);
+    		init(this, options, instance, create_fragment, safe_not_equal, { value: 4 }, add_css);
     	}
     }
 
@@ -54072,8 +54165,21 @@
     var script = document.currentScript;
     script.parentNode.insertBefore(div, script);
 
-    new App({
-    	target: div
-    });
+    const url = window.location.href.split('/');
+    const payment_id = url[url.length - 1];
+
+    fetch(`/pay/${payment_id}`, {
+    	headers: {
+    		signed_msg: 'eyJzaWduYXR1cmUiOiIweDFlODMxNzgzYTA3OWU0OGI1MGJhZGQyOTUwNWM2ZTFlMzZkN2NkNThjNzYxMjEwYWY3OTBmYzIzNTZlY2YwY2QxYzE1NmVhNDdkMjZjYjY1ODY2ZTMzODcxZjQ5YWQyNWY5MmRhMzM3MTdlZTI0ODM1ZWQ3YzFhYWQ5Yjg0YmUwMWMiLCJib2R5IjoiVVJJOiBodHRwOi8vbG9jYWxob3N0OjMwMDAvXG5XZWIzIFRva2VuIFZlcnNpb246IDJcbk5vbmNlOiA4MjIxMTc4MlxuSXNzdWVkIEF0OiAyMDIyLTAyLTEwVDA2OjMwOjU1LjAxMFpcbkV4cGlyYXRpb24gVGltZTogMjAyMi0wMi0xMVQwNjozMDo1NS4wMDBaIn0',
+    	}
+    })
+    	.then(data => data.json())
+    	.then(res => {
+    		new App({
+    			target: div,
+    			props: { value: res.amount }
+    		});
+    	})
+    	.catch(e => console.error(e));
 
 })();

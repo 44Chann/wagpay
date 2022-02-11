@@ -1,19 +1,34 @@
 <script>
   import WagPay from './WagPay'
-  const wag = new WagPay(window, '0x444A900d6CC95F8d4568cB6e3096f518B9606294', '4PiUQB8z7iMRyJLRo3A9Tth9UDGzXuDaQ9kNhVewuSiQ')
+  const wag = new WagPay(window, '0x444A900d6CC95F8d4568cB6e3096f518B9606294', '4PiUQB8z7iMRyJLRo3A9Tth9UDGzXuDaQ9kNhVewuSiQ', '', 'metamask')
+
+  var ethAddress = ''
+  var solAddress = ''
+  export let value
+
+  const connectSol = async () => {
+    const address = await wag.connectSol()
+    solAddress = address
+  }
+
+  const connectEth = async () => {
+    wag.connectEth()
+  }
 
   const payEther = () => {
-    wag.sendEthTransaction('0.01')
+    wag.sendEthTransaction(value)
   }
 
   const paySol = () => {
-    wag.sendSolTransaction(1)
+    wag.sendSolTransaction(Number(value))
   }
 </script>
 
 <main>
   <button on:click={() => payEther()}>Ether</button>
   <button on:click={() => paySol()}>Solana</button>
+  <button on:click={() => connectEth()}>Connect Eth</button>
+  <button on:click={() => connectSol()}>Connect Sol</button>
 </main>
 
 <style>
