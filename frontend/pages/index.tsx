@@ -1,6 +1,9 @@
 import Link from 'next/link'
+import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
+
+import How from '../components/How'
 
 const Homepage: React.FC = () => {
   const user = supabase.auth.user()
@@ -32,13 +35,10 @@ const Homepage: React.FC = () => {
   
   return (
     <>
-      <Link href="/auth">Log In Now!</Link>
-      <pre>
-        <code>
-          {JSON.stringify(user, null, 2)}
-        </code>
-      </pre>
-      <button onClick={send}>Click Me</button>
+      <Head>
+        <title>WagPay</title>
+      </Head>
+      <How></How>
     </>
   )
 }
