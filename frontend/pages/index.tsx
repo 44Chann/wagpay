@@ -8,14 +8,21 @@ import Features from '../components/features'
 import Designed from '../components/designed'
 import CTA from '../components/CTA'
 import Footer from '../components/Footer'
+import Navbar from '../components/Navbar/Navbar'
+import { HeroSection } from '../components/HeroSection/HeroSection'
 
-const Homepage: React.FC = () => {  
+const Homepage: React.FC = () => {
   return (
     <>
       <Head>
         <title>WagPay</title>
       </Head>
       <div className='w-full h-full'>
+        <div className=''>
+          <Navbar />
+          <HeroSection />
+
+        </div>
         <How></How>
         <Features></Features>
         <Designed></Designed>
