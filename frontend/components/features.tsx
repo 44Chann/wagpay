@@ -27,7 +27,7 @@ const Points = [
 const Features: React.FC = () => {
   return (
     <>
-      <div className='w-full h-full bg-[#6C7EE1]/20 space-y-10 xl:space-y-0'>
+      <div className='w-full h-full bg-[#6C7EE1]/20 space-y-10 xl:space-y-0 pt-20'>
         <Banner />
         <div className="flex flex-col pt-20 space-y-10 lg:space-y-4 justify-center items-center">
           {Points.map((value: any) => (
