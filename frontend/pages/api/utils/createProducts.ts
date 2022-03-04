@@ -1,4 +1,4 @@
-import { supabase } from "../../supabase";
+import { supabase } from "../../../supabase";
 import { Product } from "../product";
 
 const createProducts = async (products: Product[]) => {

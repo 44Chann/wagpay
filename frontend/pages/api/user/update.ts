@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { supabase } from '../../supabase'
+import { supabase } from '../../../supabase'
 import verifyUser from '../middlewares/verifyUser'
 
 interface User {

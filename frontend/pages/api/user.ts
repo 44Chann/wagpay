@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { supabase } from '../supabase'
+import { supabase } from '../../supabase'
 import jwt from 'jsonwebtoken'
 import verifyUser from './middlewares/verifyUser'
 

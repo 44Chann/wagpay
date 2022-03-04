@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { supabase } from "../../supabase";
+import { supabase } from "../../../supabase";
 import jwt from 'jsonwebtoken'
 
 const verifyUser = async (req: NextApiRequest, res: NextApiResponse) => {

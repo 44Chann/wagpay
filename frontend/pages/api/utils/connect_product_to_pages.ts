@@ -1,4 +1,4 @@
-import { supabase } from "../../supabase"
+import { supabase } from "../../../supabase"
 
 const connect_product_to_pages = async (product_ids: number[], pages: number) => {
 	for(let i=0;i<product_ids.length;i++) {
