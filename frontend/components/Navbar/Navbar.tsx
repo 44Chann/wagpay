@@ -6,12 +6,10 @@ import ConnectWallet from '../Wallet'
 const Navbar = () => {
 
 	return (
+		<nav className="z-50 fixed px-16 left-0 right-0 top-0  w-full m-auto backdrop-blur-2xl flex justify-between py-4 items-center font-inter">
+			<h1>WagPay</h1>
 
-
-		<nav className="sticky  left-0 right-0 top-0  w-[90%] m-auto backdrop-blur-2xl flex justify-between py-4 items-center">
-			<h1>Wagpay</h1>
-
-			<ul className="flex justify-center">
+			<ul className="flex justify-center item-center">
 				{[
 					{
 						name: "Home",
@@ -37,17 +35,8 @@ const Navbar = () => {
 			</ul>
 
 			<ul className="flex justify-between items-center">
-				<Link href="/Dasboard">
-					<div className="flex items-center bg-[#F4F4FE]  px-4 py-3">
-
-						<a href="" className="hover:border-b-[1px] border-black" >DashBoard</a>
-						<span className="px-3">{">"}</span>
-					</div>
-
-				</Link>
 				<Link href="/ETH">
-
-					<a className="ml-4 bg-[#6C7EE1] px-8 text-white py-3">log in</a>
+					<a className="rounded-xl ml-4 bg-[#6C7EE1] px-8 text-white py-3">Claim Username</a>
 				</Link>
 			</ul>
 		</nav>

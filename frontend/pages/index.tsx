@@ -18,10 +18,10 @@ const Homepage: React.FC = () => {
         <title>WagPay</title>
       </Head>
       <div className='w-full h-full'>
-        <div className=''>
-          <Navbar />
+        <Navbar />
+        <div className='relative min-h-screen flex justify-center bg-[#6C7EE1]/20'>
+          <img src="/BG.png" alt="" className='absolute w-full h-full' />
           <HeroSection />
-
         </div>
         <How></How>
         <Features></Features>
