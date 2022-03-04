@@ -4,41 +4,43 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 
 import How from '../components/How'
+import Features from '../components/features'
+import Designed from '../components/designed'
 
-const Homepage: React.FC = () => {
-  const user = supabase.auth.user()
-  
-  const send = () => {
-    try {
-      const session_auth = JSON.parse(localStorage.getItem('supabase.auth.token') as string)
-      if(session_auth.currentSession.access_token) {
-        fetch('/api/submissions/create', {
-          method: 'POST',
-          body: JSON.stringify({
-            name: 'Satyam Kulkarni',
-            contact_number: '88054950435',
-            email: 'string',
-            eth_address: 'string',
-            sol_address: 'string',
-            products: [12, 13],
-            page: 1
-          }),
-          headers: {
-            'Bearer-Token': session_auth.currentSession.access_token
-          }
-        }).then(x => x.json()).then(d => console.log(d)).catch(e => console.error(e))
-      }
-    } catch (e) {
-      console.log('Wait for Loading')
-    }
+const Points = [
+  {
+    invert: true,
+    for: 'For Businesses',
+    title: 'The world’s most powerful and easy-to-use APIs',
+    desc: 'Millions of businesses of all sizes—from startups to large enterprises—use Wagpay’s software and APIs to accept payments, send payouts, and manage their businesses online.',
+    point1: 'Point 1',
+    point1desc: 'Millions of businesses of all sizes—from startups to large enterprises—use Wagpay’s software and APIs',
+    point2: 'Point 1',
+    point2desc: 'Millions of businesses of all sizes—from startups to large enterprises—use Wagpay’s software and APIs',
+  },
+  {
+    invert: false,
+    for: 'For SMBs',
+    title: 'The world’s most powerful and easy-to-use APIs',
+    desc: 'Millions of businesses of all sizes—from startups to large enterprises—use Wagpay’s software and APIs to accept payments, send payouts, and manage their businesses online.',
+    point1: 'Point 1',
+    point1desc: 'Millions of businesses of all sizes—from startups to large enterprises—use Wagpay’s software and APIs',
+    point2: 'Point 1',
+    point2desc: 'Millions of businesses of all sizes—from startups to large enterprises—use Wagpay’s software and APIs',
   }
-  
+]
+
+const Homepage: React.FC = () => {  
   return (
     <>
       <Head>
         <title>WagPay</title>
       </Head>
-      <How></How>
+      <div className='w-full h-full'>
+        <How></How>
+        <Features></Features>
+        <Designed></Designed>
+      </div>
     </>
   )
 }
