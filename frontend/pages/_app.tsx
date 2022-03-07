@@ -23,6 +23,7 @@ import {
 } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl } from '@solana/web3.js';
 import { useMemo } from 'react'
+import { ToastContainer, toast } from 'material-react-toastify';
 
 // Default styles that can be overridden by your app
 require('@solana/wallet-adapter-react-ui/styles.css');
@@ -80,18 +81,20 @@ function MyApp({ Component, pageProps }: AppProps) {
       ],
       [network]
   );
+
+  toast.configure();
+
   return (
     <Provider autoConnect connectors={connectors}>
       <ConnectionProvider endpoint={endpoint}>
-        <WalletProvider wallets={wallets} autoConnect>
+        <WalletProvider wallets={wallets}>
           <WalletModalProvider>
-
-        <Head>
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin='' />
-          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;700;800&display=swap" rel="stylesheet" />
-        </Head>
-        <Component {...pageProps} />
+          <Head>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin='' />
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;700;800&display=swap" rel="stylesheet" />
+          </Head>
+          <Component {...pageProps} />
         </WalletModalProvider>
         </WalletProvider>
         </ConnectionProvider>
