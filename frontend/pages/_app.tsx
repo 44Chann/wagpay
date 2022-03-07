@@ -81,8 +81,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       [network]
   );
 
-  toast.configure();
-
   return (
     <Provider autoConnect connectors={connectors}>
       <ConnectionProvider endpoint={endpoint}>
