@@ -7,7 +7,6 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 import { useSignMessage } from 'wagmi'
-import { SolanaButton } from '../components/SolanaButton';
 
 const Claim = () => {
 	toast.configure()
