@@ -57,7 +57,11 @@ const connectors = ({ chainId }: any) => {
   ]
 }
 
-
+declare global {
+  interface Window {
+    solana: any
+  }
+}
 
 function MyApp({ Component, pageProps }: AppProps) {
   const network = WalletAdapterNetwork.Devnet;
@@ -90,6 +94,10 @@ function MyApp({ Component, pageProps }: AppProps) {
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin='' />
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;700;800&display=swap" rel="stylesheet" />
+
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin='' />
+            <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
           </Head>
           <Component {...pageProps} />
         </WalletModalProvider>

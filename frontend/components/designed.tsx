@@ -27,9 +27,9 @@ const Points = [
 const Designed: React.FC = () => {
   return (
     <>
-      <div className='w-full h-full xl:h-screen bg-[#6C7EE1]/20 space-y-10 xl:space-y-0 pt-20'>
+      <div className='w-full h-full  bg-[#6C7EE1]/20 space-y-10 xl:space-y-0 pt-20'>
         <Hero></Hero>
-        <div className="flex flex-col space-y-10 lg:space-y-4 justify-center items-center">
+        <div className="flex flex-col space-y-20 lg:space-y-20 xl:space-y-20 justify-center items-center">
           {Points.map((value: any) => (
             <DoubleCard {...value}></DoubleCard>
           ))}

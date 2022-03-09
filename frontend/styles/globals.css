@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* .wallet-adapter-button {
+	background: transparent !important;
+	width: 100% !important;
+	padding: 5px !important;
+	display: flex !important;
+	justify-content: center !important;
+	align-items: center !important;
+	border-width: 1px !important;
+	border-color: black !important;
+	border-radius: 10px !important;
+	font-family: 'Urbanist' !important;
+	color: black !important;
+} */

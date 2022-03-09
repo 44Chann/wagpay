@@ -7,7 +7,7 @@ const Navbar = () => {
 
 	return (
 		<nav className="z-50 fixed px-16 left-0 right-0 top-0  w-full m-auto backdrop-blur-2xl flex justify-between py-4 items-center font-inter">
-			<h1>WagPay</h1>
+			<h1 className="font-bold text-xl px-3">WagPay</h1>
 
 			<ul className="flex justify-center item-center">
 				{[
@@ -35,8 +35,8 @@ const Navbar = () => {
 			</ul>
 
 			<ul className="flex justify-between items-center">
-				<Link href="/ETH">
-					<a className="rounded-xl ml-4 bg-[#6C7EE1] px-8 text-white py-3">Claim Username</a>
+				<Link href="/claim">
+					<a className="rounded-xl ml-4 bg-[#6C7EE1] px-8 text-white py-3 hover:scale-110 duration-200">Claim Username</a>
 				</Link>
 			</ul>
 		</nav>
