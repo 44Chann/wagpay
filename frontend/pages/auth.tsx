@@ -25,10 +25,12 @@ const Auth: React.FC = () => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
-		const { error } = await supabase.auth.signIn({ email })
+		console.log(email)
+		const { user, session, error } = await supabase.auth.signIn({ email })
 		if (!error) {
+			console.log(email)
 			getOrCreateUser(email)
-			push('/')
+			// push('/')
 		}
 	}
 

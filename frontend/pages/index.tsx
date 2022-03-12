@@ -12,6 +12,10 @@ import Navbar from '../components/Navbar/Navbar'
 import { HeroSection } from '../components/HeroSection/HeroSection'
 
 const Homepage: React.FC = () => {
+  useEffect(() => {
+    console.log(supabase.auth.user())
+  }, [])
+
   return (
     <>
       <Head>
