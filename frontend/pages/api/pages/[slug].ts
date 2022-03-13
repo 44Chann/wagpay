@@ -21,14 +21,10 @@ interface Page {
 	products: Product[]
 }
 
-async function create(req: NextApiRequest, res: NextApiResponse<any | string>) {
-	let jwt = await verifyUser(req, res)
-	let { user, error } = await supabase.auth.api.getUser(req.headers['bearer-token'] as string)
-	
+async function create(req: NextApiRequest, res: NextApiResponse<any | string>) {	
 	if(req.method === 'GET') {
-		const slug = useRouter().query
-		console.log(user)
-		const { data, error } = await supabase
+		const slug = req.query['slug']
+		let { data, error } = await supabase
 			.from('pages')
 			.select('*')
 			.eq('slug', slug)
@@ -37,8 +33,22 @@ async function create(req: NextApiRequest, res: NextApiResponse<any | string>) {
 			res.status(400).send('Page was not created ' + JSON.stringify(error))
 			return
 		}
+		
+		let { data: productData, error: productError } = await supabase
+			.from('product_page')
+			.select('product_id!inner(*)')
+			.eq('page_id', data[0].id)
+			
+		if(!productData || error || productData?.length === 0) {
+			res.status(400).send('Page was not created ' + JSON.stringify(productError))
+			return
+		}
 
-		res.status(201).send(data)
+		productData = productData?.map(product => product.product_id)
+
+		data[0].products = productData
+
+		res.status(201).send(data[0])
 	}
 }
 

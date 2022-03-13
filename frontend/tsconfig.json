@@ -17,6 +17,7 @@
     "paths": {
       "*": ["./types/*"]
     },
+    "downlevelIteration": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "ethereum-qr-code.d.ts"],
   "exclude": ["node_modules"]

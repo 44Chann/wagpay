@@ -23,6 +23,8 @@ import {
 } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl } from '@solana/web3.js';
 import { useMemo } from 'react'
+import { NotificationsProvider } from '@mantine/notifications';
+import { MantineProvider } from '@mantine/core'
 
 // Default styles that can be overridden by your app
 require('@solana/wallet-adapter-react-ui/styles.css');
@@ -89,18 +91,22 @@ function MyApp({ Component, pageProps }: AppProps) {
     <Provider autoConnect connectors={connectors}>
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={wallets}>
-          <WalletModalProvider>
-          <Head>
-            <link rel="preconnect" href="https://fonts.googleapis.com" />
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin='' />
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;700;800&display=swap" rel="stylesheet" />
+          <MantineProvider>
+            <NotificationsProvider>
+                <Head>
+                  <link rel="preconnect" href="https://fonts.googleapis.com" />
+                  <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin='' />
+                  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;700;800&display=swap" rel="stylesheet" />
 
-            <link rel="preconnect" href="https://fonts.googleapis.com" />
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin='' />
-            <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-          </Head>
-          <Component {...pageProps} />
-        </WalletModalProvider>
+                  <link rel="preconnect" href="https://fonts.googleapis.com" />
+                  <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin='' />
+                  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+                </Head>
+                <WalletModalProvider>
+                  <Component {...pageProps} />
+                </WalletModalProvider>
+            </NotificationsProvider>
+          </MantineProvider>
         </WalletProvider>
         </ConnectionProvider>
     </Provider>
