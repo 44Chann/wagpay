@@ -1,48 +1,667 @@
-import SidebarLinks from "../components/Dashboard/SidebarLinks"
-import Navbar from "../components/Navbar/Navbar"
-import TopBar from "../components/Dashboard/TopBar"
+import { Fragment, useState } from 'react'
+import { Dialog, Menu, Transition } from '@headlessui/react'
+import {
+  CollectionIcon,
+  CogIcon,
+  CreditCardIcon,
+  HomeIcon,
+  MenuAlt1Icon,
+  QuestionMarkCircleIcon,
+  ShoppingCartIcon,
+  ScaleIcon,
+  ShieldCheckIcon,
+  TrendingUpIcon,
+  XIcon,
+} from '@heroicons/react/outline'
+import {
+  CashIcon,
+  CheckCircleIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  OfficeBuildingIcon,
+  SearchIcon,
+} from '@heroicons/react/solid'
 
-const sidebar_links = [
-	{name: 'Overview', svg: <svg width="24" height="24" viewBox="0 0 24 24" fill="#FFFFFF" xmlns="http://www.w3.org/2000/svg">
-		<path d="M4 13H10C10.55 13 11 12.55 11 12V4C11 3.45 10.55 3 10 3H4C3.45 3 3 3.45 3 4V12C3 12.55 3.45 13 4 13ZM4 21H10C10.55 21 11 20.55 11 20V16C11 15.45 10.55 15 10 15H4C3.45 15 3 15.45 3 16V20C3 20.55 3.45 21 4 21ZM14 21H20C20.55 21 21 20.55 21 20V12C21 11.45 20.55 11 20 11H14C13.45 11 13 11.45 13 12V20C13 20.55 13.45 21 14 21ZM13 4V8C13 8.55 13.45 9 14 9H20C20.55 9 21 8.55 21 8V4C21 3.45 20.55 3 20 3H14C13.45 3 13 3.45 13 4Z" fill="white"/>
-	</svg>
-	},
-	{name: 'Pages', svg: <svg width="24" height="24" viewBox="0 0 24 24" fill="#FFFFFF" xmlns="http://www.w3.org/2000/svg">
-		<path d="M16 8H8V6H16V8ZM16 10H8V12H16V10ZM20 4V16L14 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V4C4 3.46957 4.21071 2.96086 4.58579 2.58579C4.96086 2.21071 5.46957 2 6 2H18C18.5304 2 19.0391 2.21071 19.4142 2.58579C19.7893 2.96086 20 3.46957 20 4ZM18 14V4H6V20H12V16C12 15.4696 12.2107 14.9609 12.5858 14.5858C12.9609 14.2107 13.4696 14 14 14H18Z" fill="black"/>
-	</svg>
-	},
-	{name: 'Products', svg: <svg width="25" height="24" viewBox="0 0 25 24" fill="#FFFFFF" xmlns="http://www.w3.org/2000/svg">
-	<path d="M22.5 3H2.5V9H3.5V20C3.5 20.5304 3.71071 21.0391 4.08579 21.4142C4.46086 21.7893 4.96957 22 5.5 22H19.5C20.0304 22 20.5391 21.7893 20.9142 21.4142C21.2893 21.0391 21.5 20.5304 21.5 20V9H22.5V3ZM4.5 5H20.5V7H4.5V5ZM19.5 20H5.5V9H19.5V20ZM9.5 11H15.5C15.5 11.5304 15.2893 12.0391 14.9142 12.4142C14.5391 12.7893 14.0304 13 13.5 13H11.5C10.9696 13 10.4609 12.7893 10.0858 12.4142C9.71071 12.0391 9.5 11.5304 9.5 11Z" fill="black"/>
-	</svg>
-	},
-	{name: 'Transaction', svg: <svg width="25" height="24" viewBox="0 0 24 24" fill="#FFFFFF" xmlns="http://www.w3.org/2000/svg">
-	<path d="M16.5003 21.3334H18.5003V13.3334H21.167V21.3334H23.167L19.8337 25.3334L16.5003 21.3334ZM11.167 10.6667H13.167V18.6667H15.8337V10.6667H17.8337L14.5003 6.66669L11.167 10.6667Z" fill="black"/>
-	</svg>
-	},
-	{name: 'Settings', svg: <svg className="text-white" width="24" height="24" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
-	<path d="M19.8999 12.66C19.7396 12.4775 19.6512 12.2429 19.6512 12C19.6512 11.7571 19.7396 11.5225 19.8999 11.34L21.1799 9.90002C21.3209 9.74269 21.4085 9.54472 21.4301 9.33452C21.4516 9.12433 21.4061 8.9127 21.2999 8.73002L19.2999 5.27002C19.1948 5.08754 19.0348 4.94289 18.8426 4.8567C18.6505 4.77051 18.4361 4.74718 18.2299 4.79002L16.3499 5.17002C16.1107 5.21945 15.8616 5.17961 15.6498 5.05802C15.4379 4.93643 15.2779 4.7415 15.1999 4.51002L14.5899 2.68002C14.5228 2.4814 14.395 2.30888 14.2245 2.18686C14.0541 2.06484 13.8495 1.99948 13.6399 2.00002H9.6399C9.42183 1.98864 9.20603 2.04894 9.02546 2.17173C8.84489 2.29452 8.70948 2.47304 8.6399 2.68002L8.0799 4.51002C8.0019 4.7415 7.84187 4.93643 7.63001 5.05802C7.41815 5.17961 7.16911 5.21945 6.9299 5.17002L4.9999 4.79002C4.80445 4.7624 4.6052 4.79324 4.42724 4.87866C4.24929 4.96407 4.1006 5.10025 3.9999 5.27002L1.9999 8.73002C1.89106 8.91067 1.84212 9.1211 1.86008 9.33124C1.87804 9.54138 1.96198 9.74046 2.0999 9.90002L3.3699 11.34C3.53022 11.5225 3.61863 11.7571 3.61863 12C3.61863 12.2429 3.53022 12.4775 3.3699 12.66L2.0999 14.1C1.96198 14.2596 1.87804 14.4587 1.86008 14.6688C1.84212 14.8789 1.89106 15.0894 1.9999 15.27L3.9999 18.73C4.10499 18.9125 4.26502 19.0571 4.45715 19.1433C4.64928 19.2295 4.86372 19.2529 5.0699 19.21L6.9499 18.83C7.18911 18.7806 7.43815 18.8204 7.65001 18.942C7.86187 19.0636 8.0219 19.2585 8.0999 19.49L8.7099 21.32C8.77948 21.527 8.91489 21.7055 9.09546 21.8283C9.27603 21.9511 9.49183 22.0114 9.7099 22H13.7099C13.9195 22.0006 14.1241 21.9352 14.2945 21.8132C14.465 21.6912 14.5928 21.5186 14.6599 21.32L15.2699 19.49C15.3479 19.2585 15.5079 19.0636 15.7198 18.942C15.9316 18.8204 16.1807 18.7806 16.4199 18.83L18.2999 19.21C18.5061 19.2529 18.7205 19.2295 18.9126 19.1433C19.1048 19.0571 19.2648 18.9125 19.3699 18.73L21.3699 15.27C21.4761 15.0873 21.5216 14.8757 21.5001 14.6655C21.4785 14.4553 21.3909 14.2573 21.2499 14.1L19.8999 12.66ZM18.4099 14L19.2099 14.9L17.9299 17.12L16.7499 16.88C16.0297 16.7328 15.2805 16.8551 14.6445 17.2238C14.0085 17.5925 13.53 18.1819 13.2999 18.88L12.9199 20H10.3599L9.9999 18.86C9.76975 18.1619 9.29128 17.5725 8.6553 17.2038C8.01932 16.8351 7.27012 16.7128 6.5499 16.86L5.3699 17.1L4.0699 14.89L4.8699 13.99C5.36185 13.44 5.63383 12.7279 5.63383 11.99C5.63383 11.2521 5.36185 10.54 4.8699 9.99002L4.0699 9.09002L5.3499 6.89002L6.5299 7.13002C7.25012 7.27724 7.99932 7.1549 8.6353 6.78622C9.27128 6.41753 9.74975 5.82818 9.9799 5.13002L10.3599 4.00002H12.9199L13.2999 5.14002C13.53 5.83818 14.0085 6.42753 14.6445 6.79622C15.2805 7.1649 16.0297 7.28724 16.7499 7.14002L17.9299 6.90002L19.2099 9.12002L18.4099 10.02C17.9235 10.5688 17.6549 11.2767 17.6549 12.01C17.6549 12.7433 17.9235 13.4513 18.4099 14ZM11.6399 8.00002C10.8488 8.00002 10.0754 8.23461 9.41761 8.67414C8.75982 9.11366 8.24713 9.73838 7.94438 10.4693C7.64163 11.2002 7.56241 12.0045 7.71675 12.7804C7.8711 13.5563 8.25206 14.269 8.81147 14.8284C9.37088 15.3879 10.0836 15.7688 10.8595 15.9232C11.6355 16.0775 12.4397 15.9983 13.1706 15.6955C13.9015 15.3928 14.5262 14.8801 14.9658 14.2223C15.4053 13.5645 15.6399 12.7911 15.6399 12C15.6399 10.9392 15.2185 9.92174 14.4683 9.17159C13.7182 8.42144 12.7008 8.00002 11.6399 8.00002ZM11.6399 14C11.2443 14 10.8577 13.8827 10.5288 13.663C10.1999 13.4432 9.94351 13.1308 9.79214 12.7654C9.64076 12.3999 9.60116 11.9978 9.67833 11.6098C9.7555 11.2219 9.94598 10.8655 10.2257 10.5858C10.5054 10.3061 10.8618 10.1156 11.2497 10.0384C11.6377 9.96128 12.0398 10.0009 12.4053 10.1523C12.7707 10.3036 13.0831 10.56 13.3028 10.8889C13.5226 11.2178 13.6399 11.6045 13.6399 12C13.6399 12.5304 13.4292 13.0392 13.0541 13.4142C12.679 13.7893 12.1703 14 11.6399 14Z" fill="black"/>
-	</svg>
-	}
+const navigation = [
+  { name: 'Overview', href: '#', icon: HomeIcon, current: true },
+  { name: 'Pages', href: '#', icon: CollectionIcon, current: false },
+  { name: 'Products', href: '#', icon: ShoppingCartIcon, current: false },
+  { name: 'Transactions', href: '#', icon: CreditCardIcon, current: false },
+  { name: 'Settings', href: '#', icon: CogIcon, current: false },
 ]
 
-const Dashboard = () => {
-	return (
-		<div className="w-full min-h-screen flex justify-start items-start font-inter text-white bg-[#6C7EE2]/20">
-			<Navbar></Navbar>
-			<div className="mt-20 w-64 border-2 h-screen flex flex-col justify-start p-5 items-center space-y-4">
-				{sidebar_links.map(value => {
-					return (
-						<SidebarLinks name={value.name}>
-							{value?.svg}
-						</SidebarLinks>
-					)
-				})}
-			</div>
-			<div className="mt-20 w-full h-full flex flex-col justify-center items-center">
-				<TopBar></TopBar>
-			</div>
-		</div>
-	)
+const secondaryNavigation = [
+  { name: 'Help', href: '#', icon: QuestionMarkCircleIcon },
+  { name: 'Privacy', href: '#', icon: ShieldCheckIcon },
+]
+
+const cards = [
+  { name: 'Monthly visits', href: '#', icon: TrendingUpIcon, amount: '320234' },
+  {
+    name: 'Products Sold',
+    href: '#',
+    icon: TrendingUpIcon,
+    amount: '30,659.45',
+  },
+  { name: 'Earned', href: '#', icon: CashIcon, amount: '$30,659.45' },
+  { name: 'Pages', href: '#', icon: CollectionIcon, amount: '2' },
+  // More items...
+]
+
+const transactions = [
+  {
+    id: 1,
+    productName: '2 Kg Ganja',
+    pageName: 'Page Name',
+    href: '#',
+    amount: '$20,000',
+    currency: 'USD',
+    status: 'success',
+    date: 'July 11, 2020',
+    datetime: '2020-07-11',
+  },
+  {
+    id: 2,
+    productName: '2 Kg Ganja',
+    pageName: 'Page Name',
+    href: '#',
+    amount: '$20,000',
+    currency: 'USD',
+    status: 'success',
+    date: 'July 11, 2020',
+    datetime: '2020-07-11',
+  },
+  {
+    id: 3,
+    productName: '2 Kg Ganja',
+    pageName: 'Page Name',
+    href: '#',
+    amount: '$20,000',
+    currency: 'USD',
+    status: 'success',
+    date: 'July 11, 2020',
+    datetime: '2020-07-11',
+  },
+  // More transactions...
+]
+
+const statusStyles = {
+  success: 'bg-green-100 text-green-800',
+  processing: 'bg-yellow-100 text-yellow-800',
+  failed: 'bg-gray-100 text-gray-800',
 }
 
-export default Dashboard
+function classNames(...classes: any) {
+  return classes.filter(Boolean).join(' ')
+}
+
+export default function Dashboard() {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  return (
+    <>
+      <div className="min-h-full">
+        <Transition.Root show={sidebarOpen} as={Fragment}>
+          <Dialog
+            as="div"
+            className="fixed inset-0 z-40 flex lg:hidden"
+            onClose={setSidebarOpen}
+          >
+            <Transition.Child
+              as={Fragment}
+              enter="transition-opacity ease-linear duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="transition-opacity ease-linear duration-300"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Overlay className="fixed inset-0 bg-gray-600 bg-opacity-75" />
+            </Transition.Child>
+            <Transition.Child
+              as={Fragment}
+              enter="transition ease-in-out duration-300 transform"
+              enterFrom="-translate-x-full"
+              enterTo="translate-x-0"
+              leave="transition ease-in-out duration-300 transform"
+              leaveFrom="translate-x-0"
+              leaveTo="-translate-x-full"
+            >
+              <div className="relative flex w-full max-w-xs flex-1 flex-col bg-cyan-700 pt-5 pb-4">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-in-out duration-300"
+                  enterFrom="opacity-0"
+                  enterTo="opacity-100"
+                  leave="ease-in-out duration-300"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0"
+                >
+                  <div className="absolute top-0 right-0 -mr-12 pt-2">
+                    <button
+                      type="button"
+                      className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                      onClick={() => setSidebarOpen(false)}
+                    >
+                      <span className="sr-only">Close sidebar</span>
+                      <XIcon
+                        className="h-6 w-6 text-white"
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </div>
+                </Transition.Child>
+                <div className="flex flex-shrink-0 items-center px-4">
+                  <h1 className="font-inter text-2xl font-extrabold text-white">
+                    WagPay
+                  </h1>
+                </div>
+                <nav
+                  className="mt-5 h-full flex-shrink-0 divide-y divide-cyan-800 overflow-y-auto"
+                  aria-label="Sidebar"
+                >
+                  <div className="space-y-1 px-2">
+                    {navigation.map((item) => (
+                      <a
+                        key={item.name}
+                        href={item.href}
+                        className={classNames(
+                          item.current
+                            ? 'bg-cyan-800 text-white'
+                            : 'text-cyan-100 hover:bg-cyan-600 hover:text-white',
+                          'group flex items-center rounded-md px-2 py-2 text-base font-medium'
+                        )}
+                        aria-current={item.current ? 'page' : undefined}
+                      >
+                        <item.icon
+                          className="mr-4 h-6 w-6 flex-shrink-0 text-cyan-200"
+                          aria-hidden="true"
+                        />
+                        {item.name}
+                      </a>
+                    ))}
+                  </div>
+                  <div className="mt-6 pt-6">
+                    <div className="space-y-1 px-2">
+                      {secondaryNavigation.map((item) => (
+                        <a
+                          key={item.name}
+                          href={item.href}
+                          className="group flex items-center rounded-md px-2 py-2 text-base font-medium text-cyan-100 hover:bg-cyan-600 hover:text-white"
+                        >
+                          <item.icon
+                            className="mr-4 h-6 w-6 text-cyan-200"
+                            aria-hidden="true"
+                          />
+                          {item.name}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </nav>
+              </div>
+            </Transition.Child>
+            <div className="w-14 flex-shrink-0" aria-hidden="true">
+              {/* Dummy element to force sidebar to shrink to fit close icon */}
+            </div>
+          </Dialog>
+        </Transition.Root>
+
+        {/* Static sidebar for desktop */}
+        <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
+          {/* Sidebar component, swap this element with another sidebar if you like */}
+          <div className="flex flex-grow flex-col overflow-y-auto bg-cyan-700 pt-5 pb-4">
+            <div className="flex flex-shrink-0 items-center px-4">
+              <h1 className="text-2xl font-extrabold text-white">WagPay</h1>
+            </div>
+            <nav
+              className="mt-5 flex flex-1 flex-col divide-y divide-cyan-800 overflow-y-auto"
+              aria-label="Sidebar"
+            >
+              <div className="space-y-1 px-2">
+                {navigation.map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className={classNames(
+                      item.current
+                        ? 'bg-cyan-800 text-white'
+                        : 'text-cyan-100 hover:bg-cyan-600 hover:text-white',
+                      'group flex items-center rounded-md px-2 py-2 text-sm font-medium leading-6'
+                    )}
+                    aria-current={item.current ? 'page' : undefined}
+                  >
+                    <item.icon
+                      className="mr-4 h-6 w-6 flex-shrink-0 text-cyan-200"
+                      aria-hidden="true"
+                    />
+                    {item.name}
+                  </a>
+                ))}
+              </div>
+              <div className="mt-6 pt-6">
+                <div className="space-y-1 px-2">
+                  {secondaryNavigation.map((item) => (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      className="group flex items-center rounded-md px-2 py-2 text-sm font-medium leading-6 text-cyan-100 hover:bg-cyan-600 hover:text-white"
+                    >
+                      <item.icon
+                        className="mr-4 h-6 w-6 text-cyan-200"
+                        aria-hidden="true"
+                      />
+                      {item.name}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </nav>
+          </div>
+        </div>
+
+        <div className="flex flex-1 flex-col lg:pl-64">
+          <div className="relative z-10 flex h-16 flex-shrink-0 border-b border-gray-200 bg-white lg:border-none">
+            <button
+              type="button"
+              className="border-r border-gray-200 px-4 text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-cyan-500 lg:hidden"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <span className="sr-only">Open sidebar</span>
+              <MenuAlt1Icon className="h-6 w-6" aria-hidden="true" />
+            </button>
+            {/* Search bar */}
+            <div className="flex flex-1 justify-between px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
+              <div className="flex flex-1">
+                <form className="flex w-full md:ml-0" action="#" method="GET">
+                  <label htmlFor="search-field" className="sr-only">
+                    Search
+                  </label>
+                  <div className="relative w-full text-gray-400 focus-within:text-gray-600">
+                    <div
+                      className="pointer-events-none absolute inset-y-0 left-0 flex items-center"
+                      aria-hidden="true"
+                    >
+                      <SearchIcon className="h-5 w-5" aria-hidden="true" />
+                    </div>
+                    <input
+                      id="search-field"
+                      name="search-field"
+                      className="block h-full w-full border-transparent py-2 pl-8 pr-3 text-gray-900 placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                      placeholder="Search transactions"
+                      type="search"
+                    />
+                  </div>
+                </form>
+              </div>
+              <div className="ml-4 flex items-center md:ml-6">
+                {/* Profile dropdown */}
+                <Menu as="div" className="relative ml-3">
+                  <div>
+                    <Menu.Button className="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 lg:rounded-md lg:p-2 lg:hover:bg-gray-50">
+                      <img
+                        className="h-8 w-8 rounded-full"
+                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                        alt=""
+                      />
+                      <span className="ml-3 hidden text-sm font-medium text-gray-700 lg:block">
+                        <span className="sr-only">Open user menu for </span>
+                        gm, username
+                      </span>
+                      <ChevronDownIcon
+                        className="ml-1 hidden h-5 w-5 flex-shrink-0 text-gray-400 lg:block"
+                        aria-hidden="true"
+                      />
+                    </Menu.Button>
+                  </div>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            href="#"
+                            className={classNames(
+                              active ? 'bg-gray-100' : '',
+                              'block px-4 py-2 text-sm text-gray-700'
+                            )}
+                          >
+                            Your Profile
+                          </a>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            href="#"
+                            className={classNames(
+                              active ? 'bg-gray-100' : '',
+                              'block px-4 py-2 text-sm text-gray-700'
+                            )}
+                          >
+                            Settings
+                          </a>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            href="#"
+                            className={classNames(
+                              active ? 'bg-gray-100' : '',
+                              'block px-4 py-2 text-sm text-gray-700'
+                            )}
+                          >
+                            Logout
+                          </a>
+                        )}
+                      </Menu.Item>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
+              </div>
+            </div>
+          </div>
+          <main className="flex-1 pb-8">
+            {/* Page header */}
+            <div className="bg-white shadow">
+              <div className="px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
+                <div className="py-6 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center">
+                      <img
+                        className="hidden h-16 w-16 rounded-full sm:block"
+                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.6&w=256&h=256&q=80"
+                        alt=""
+                      />
+                      <div>
+                        <div className="flex items-center">
+                          <img
+                            className="h-16 w-16 rounded-full sm:hidden"
+                            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.6&w=256&h=256&q=80"
+                            alt=""
+                          />
+                          <h1 className="ml-3 font-inter text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:leading-9">
+                            Good morning, Buidlers
+                          </h1>
+                        </div>
+                        <dl className="mt-6 flex flex-col sm:ml-3 sm:mt-1 sm:flex-row sm:flex-wrap">
+                          <dt className="sr-only">Company</dt>
+                          <dd className="flex items-center text-sm font-medium capitalize text-gray-500 sm:mr-6">
+                            <OfficeBuildingIcon
+                              className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                              aria-hidden="true"
+                            />
+                            India
+                          </dd>
+                          <dt className="sr-only">Account status</dt>
+                          <dd className="mt-3 flex items-center text-sm font-medium capitalize text-gray-500 sm:mr-6 sm:mt-0">
+                            <CheckCircleIcon
+                              className="mr-1.5 h-5 w-5 flex-shrink-0 text-green-400"
+                              aria-hidden="true"
+                            />
+                            Verified account
+                          </dd>
+                        </dl>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-6 flex space-x-3 md:mt-0 md:ml-4">
+                    <button
+                      type="button"
+                      className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                    >
+                      Button #1
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex items-center rounded-md border border-transparent bg-cyan-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                    >
+                      Button #2
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+                <h2 className="text-lg font-medium leading-6 text-gray-900">
+                  Overview
+                </h2>
+                <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {/* Card */}
+                  {cards.map((card) => (
+                    <div
+                      key={card.name}
+                      className="overflow-hidden rounded-lg bg-white shadow"
+                    >
+                      <div className="p-5">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0">
+                            <card.icon
+                              className="h-6 w-6 text-gray-400"
+                              aria-hidden="true"
+                            />
+                          </div>
+                          <div className="ml-5 w-0 flex-1">
+                            <dl>
+                              <dt className="truncate text-sm font-medium text-gray-500">
+                                {card.name}
+                              </dt>
+                              <dd>
+                                <div className="text-lg font-medium text-gray-900">
+                                  {card.amount}
+                                </div>
+                              </dd>
+                            </dl>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="bg-gray-50 px-5 py-3">
+                        <div className="text-sm">
+                          <a
+                            href={card.href}
+                            className="font-medium text-cyan-700 hover:text-cyan-900"
+                          >
+                            View all
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <h2 className="mx-auto mt-8 max-w-6xl px-4 text-lg font-medium leading-6 text-gray-900 sm:px-6 lg:px-8">
+                Recent activity
+              </h2>
+
+              {/* Activity list (smallest breakpoint only) */}
+              <div className="shadow sm:hidden">
+                <ul
+                  role="list"
+                  className="mt-2 divide-y divide-gray-200 overflow-hidden shadow sm:hidden"
+                >
+                  {transactions.map((transaction) => (
+                    <li key={transaction.id}>
+                      <a
+                        href={transaction.href}
+                        className="block bg-white px-4 py-4 hover:bg-gray-50"
+                      >
+                        <span className="flex items-center space-x-4">
+                          <span className="flex flex-1 space-x-2 truncate">
+                            <CashIcon
+                              className="h-5 w-5 flex-shrink-0 text-gray-400"
+                              aria-hidden="true"
+                            />
+                            <span className="flex flex-col truncate text-sm text-gray-500">
+                              <span className="truncate">
+                                {transaction.productName}
+                              </span>
+                              <span>
+                                <span className="font-medium text-gray-900">
+                                  {transaction.amount}
+                                </span>{' '}
+                                {transaction.currency}
+                              </span>
+                              <time dateTime={transaction.datetime}>
+                                {transaction.date}
+                              </time>
+                            </span>
+                          </span>
+                          <ChevronRightIcon
+                            className="h-5 w-5 flex-shrink-0 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+
+                <nav
+                  className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3"
+                  aria-label="Pagination"
+                >
+                  <div className="flex flex-1 justify-between">
+                    <a
+                      href="#"
+                      className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500"
+                    >
+                      Previous
+                    </a>
+                    <a
+                      href="#"
+                      className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500"
+                    >
+                      Next
+                    </a>
+                  </div>
+                </nav>
+              </div>
+
+              {/* Activity table (small breakpoint and up) */}
+              <div className="hidden sm:block">
+                <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+                  <div className="mt-2 flex flex-col">
+                    <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead>
+                          <tr>
+                            <th className="bg-gray-50 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                              Invoice
+                            </th>
+                            <th className="bg-gray-50 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                              Transaction
+                            </th>
+                            <th className="bg-gray-50 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                              Page Name
+                            </th>
+                            <th className="bg-gray-50 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                              Amount
+                            </th>
+                            <th className="hidden bg-gray-50 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 md:block">
+                              Status
+                            </th>
+                            <th className="bg-gray-50 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                              Date
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200 bg-white">
+                          {transactions.map((transaction) => (
+                            <tr key={transaction.id} className="bg-white">
+                              <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                                {transaction.id}
+                              </td>
+                              <td className="w-full max-w-0 whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                                <div className="flex">
+                                  <a
+                                    href={transaction.href}
+                                    className="group inline-flex space-x-2 truncate text-sm"
+                                  >
+                                    {/* <CashIcon
+                                      className="h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                                      aria-hidden="true"
+                                    /> */}
+                                    <p className="truncate text-gray-500 group-hover:text-gray-900">
+                                      {transaction.productName}
+                                    </p>
+                                  </a>
+                                </div>
+                              </td>
+                              <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
+                                {transaction.pageName}
+                              </td>
+                              <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
+                                <span className="font-medium text-gray-900">
+                                  {transaction.amount}{' '}
+                                </span>
+                                {transaction.currency}
+                              </td>
+                              <td className="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-500 md:block">
+                                <span
+                                  className={classNames(
+                                    // @ts-ignore
+                                    statusStyles[transaction.status],
+                                    'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize'
+                                  )}
+                                >
+                                  {transaction.status}
+                                </span>
+                              </td>
+                              <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
+                                <time dateTime={transaction.datetime}>
+                                  {transaction.date}
+                                </time>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {/* Pagination */}
+                      {/* <nav
+                        className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6"
+                        aria-label="Pagination"
+                      >
+                        <div className="hidden sm:block">
+                          <p className="text-sm text-gray-700">
+                            Showing <span className="font-medium">1</span> to{' '}
+                            <span className="font-medium">10</span> of{' '}
+                            <span className="font-medium">20</span> results
+                          </p>
+                        </div>
+                        <div className="flex flex-1 justify-between sm:justify-end">
+                          <a
+                            href="#"
+                            className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                          >
+                            Previous
+                          </a>
+                          <a
+                            href="#"
+                            className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                          >
+                            Next
+                          </a>
+                        </div>
+                      </nav> */}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </>
+  )
+}
