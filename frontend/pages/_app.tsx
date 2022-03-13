@@ -5,27 +5,30 @@ import { Provider, chain, defaultChains } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { WalletLinkConnector } from 'wagmi/connectors/walletLink'
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
-    LedgerWalletAdapter,
-    PhantomWalletAdapter,
-    SlopeWalletAdapter,
-    SolflareWalletAdapter,
-    SolletExtensionWalletAdapter,
-    SolletWalletAdapter,
-    TorusWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
+  ConnectionProvider,
+  WalletProvider,
+} from '@solana/wallet-adapter-react'
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
 import {
-    WalletModalProvider,
-    WalletDisconnectButton,
-    WalletMultiButton
-} from '@solana/wallet-adapter-react-ui';
-import { clusterApiUrl } from '@solana/web3.js';
+  LedgerWalletAdapter,
+  PhantomWalletAdapter,
+  SlopeWalletAdapter,
+  SolflareWalletAdapter,
+  SolletExtensionWalletAdapter,
+  SolletWalletAdapter,
+  TorusWalletAdapter,
+} from '@solana/wallet-adapter-wallets'
+import {
+  WalletModalProvider,
+  WalletDisconnectButton,
+  WalletMultiButton,
+} from '@solana/wallet-adapter-react-ui'
+import { clusterApiUrl } from '@solana/web3.js'
 import { useMemo } from 'react'
 
 // Default styles that can be overridden by your app
-require('@solana/wallet-adapter-react-ui/styles.css');
+require('@solana/wallet-adapter-react-ui/styles.css')
 
 const infuraId = 'a618bb907c2f4670a721be9cd51f388e'
 
@@ -64,45 +67,36 @@ declare global {
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const network = WalletAdapterNetwork.Devnet;
-  
+  const network = WalletAdapterNetwork.Devnet
+
   // You can also provide a custom RPC endpoint.
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-  
+  const endpoint = useMemo(() => clusterApiUrl(network), [network])
+
   // @solana/wallet-adapter-wallets includes all the adapters but supports tree shaking and lazy loading --
   // Only the wallets you configure here will be compiled into your application, and only the dependencies
   // of wallets that your users connect to will be loaded.
   const wallets = useMemo(
-      () => [
-          new PhantomWalletAdapter(),
-          new SlopeWalletAdapter(),
-          new SolflareWalletAdapter({ network }),
-          new TorusWalletAdapter(),
-          new LedgerWalletAdapter(),
-          new SolletWalletAdapter({ network }),
-          new SolletExtensionWalletAdapter({ network }),
-      ],
-      [network]
-  );
+    () => [
+      new PhantomWalletAdapter(),
+      new SlopeWalletAdapter(),
+      new SolflareWalletAdapter({ network }),
+      new TorusWalletAdapter(),
+      new LedgerWalletAdapter(),
+      new SolletWalletAdapter({ network }),
+      new SolletExtensionWalletAdapter({ network }),
+    ],
+    [network]
+  )
 
   return (
     <Provider autoConnect connectors={connectors}>
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={wallets}>
           <WalletModalProvider>
-          <Head>
-            <link rel="preconnect" href="https://fonts.googleapis.com" />
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin='' />
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;700;800&display=swap" rel="stylesheet" />
-
-            <link rel="preconnect" href="https://fonts.googleapis.com" />
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin='' />
-            <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-          </Head>
-          <Component {...pageProps} />
-        </WalletModalProvider>
+            <Component {...pageProps} />
+          </WalletModalProvider>
         </WalletProvider>
-        </ConnectionProvider>
+      </ConnectionProvider>
     </Provider>
   )
 }
