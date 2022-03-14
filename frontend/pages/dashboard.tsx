@@ -1,4 +1,9 @@
-import { Fragment, useState } from 'react'
+import Overview from '../components/Dashboard/Overview'
+import Pages from '../components/Dashboard/Pages'
+import Transactions from '../components/Dashboard/Transactions'
+import Products from '../components/Dashboard/Products'
+import Settings from '../components/Dashboard/Settings'
+import { Fragment, useEffect, useState } from 'react'
 import { Dialog, Menu, Transition } from '@headlessui/react'
 import {
   CollectionIcon,
@@ -20,14 +25,17 @@ import {
   ChevronRightIcon,
   OfficeBuildingIcon,
   SearchIcon,
+  PlusIcon
 } from '@heroicons/react/solid'
+import { supabase } from '../supabase'
+import { User } from './api/userType'
 
 const navigation = [
-  { name: 'Overview', href: '#', icon: HomeIcon, current: true },
-  { name: 'Pages', href: '#', icon: CollectionIcon, current: false },
-  { name: 'Products', href: '#', icon: ShoppingCartIcon, current: false },
-  { name: 'Transactions', href: '#', icon: CreditCardIcon, current: false },
-  { name: 'Settings', href: '#', icon: CogIcon, current: false },
+  { name: 'Overview', comp_name: 'overview', icon: HomeIcon, current: true },
+  { name: 'Pages', comp_name: 'pages', icon: CollectionIcon, current: false },
+  { name: 'Products', comp_name: 'products', icon: ShoppingCartIcon, current: false },
+  { name: 'Transactions', comp_name: 'transactions', icon: CreditCardIcon, current: false },
+  { name: 'Settings', comp_name: 'settings', icon: CogIcon, current: false },
 ]
 
 const secondaryNavigation = [
@@ -97,6 +105,27 @@ function classNames(...classes: any) {
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [currentTab, setCurrentTab] = useState('overview')
+  const [user, setUser] = useState<User>({})
+
+  const changeTab = (nextTab: string, nextId: number) => {
+    const index = navigation.map((e) => {return e.comp_name}).indexOf(currentTab)
+    if(index === -1) return
+    navigation[index].current = false
+    navigation[nextId].current = true
+    setCurrentTab(nextTab)
+  }
+
+  const getUser = async () => {
+    const data = await fetch(`/api/user/get?email=${supabase.auth.user()?.email}`)
+    const res = await data.json()
+
+    setUser(res)
+  }
+
+  useEffect(() => {
+    getUser()
+  }, [supabase.auth.user()])
 
   return (
     <>
@@ -161,10 +190,10 @@ export default function Dashboard() {
                   aria-label="Sidebar"
                 >
                   <div className="space-y-1 px-2">
-                    {navigation.map((item) => (
+                    {navigation.map((item, idx) => (
                       <a
                         key={item.name}
-                        href={item.href}
+                        onClick={() => changeTab(item.comp_name, idx)}
                         className={classNames(
                           item.current
                             ? 'bg-cyan-800 text-white'
@@ -219,15 +248,15 @@ export default function Dashboard() {
               aria-label="Sidebar"
             >
               <div className="space-y-1 px-2">
-                {navigation.map((item) => (
+                {navigation.map((item, idx) => (
                   <a
                     key={item.name}
-                    href={item.href}
+                    onClick={() => changeTab(item.comp_name, idx)}
                     className={classNames(
                       item.current
                         ? 'bg-cyan-800 text-white'
                         : 'text-cyan-100 hover:bg-cyan-600 hover:text-white',
-                      'group flex items-center rounded-md px-2 py-2 text-sm font-medium leading-6'
+                      'group flex items-center cursor-pointer rounded-md px-2 py-2 text-sm font-medium leading-6'
                     )}
                     aria-current={item.current ? 'page' : undefined}
                   >
@@ -306,7 +335,7 @@ export default function Dashboard() {
                       />
                       <span className="ml-3 hidden text-sm font-medium text-gray-700 lg:block">
                         <span className="sr-only">Open user menu for </span>
-                        gm, username
+                        gm, {user.username}
                       </span>
                       <ChevronDownIcon
                         className="ml-1 hidden h-5 w-5 flex-shrink-0 text-gray-400 lg:block"
@@ -325,7 +354,7 @@ export default function Dashboard() {
                   >
                     <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                       <Menu.Item>
-                        {({ active }) => (
+                        {({ active }: any) => (
                           <a
                             href="#"
                             className={classNames(
@@ -338,7 +367,7 @@ export default function Dashboard() {
                         )}
                       </Menu.Item>
                       <Menu.Item>
-                        {({ active }) => (
+                        {({ active }: any) => (
                           <a
                             href="#"
                             className={classNames(
@@ -351,7 +380,7 @@ export default function Dashboard() {
                         )}
                       </Menu.Item>
                       <Menu.Item>
-                        {({ active }) => (
+                        {({ active }: any) => (
                           <a
                             href="#"
                             className={classNames(
@@ -389,7 +418,7 @@ export default function Dashboard() {
                             alt=""
                           />
                           <h1 className="ml-3 font-inter text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:leading-9">
-                            Good morning, Buidlers
+                            Good morning, {user.username}
                           </h1>
                         </div>
                         <dl className="mt-6 flex flex-col sm:ml-3 sm:mt-1 sm:flex-row sm:flex-wrap">
@@ -418,247 +447,24 @@ export default function Dashboard() {
                       type="button"
                       className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
                     >
-                      Button #1
+                      Edit Profile
                     </button>
                     <button
                       type="button"
-                      className="inline-flex items-center rounded-md border border-transparent bg-cyan-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                      className="flex space-x-2 items-center rounded-md border border-transparent bg-cyan-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
                     >
-                      Button #2
+                      <span>New Store</span>
+                      <span className='w-5 h-5'><PlusIcon /></span>
                     </button>
                   </div>
                 </div>
               </div>
             </div>
-
-            <div className="mt-8">
-              <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-                <h2 className="text-lg font-medium leading-6 text-gray-900">
-                  Overview
-                </h2>
-                <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {/* Card */}
-                  {cards.map((card) => (
-                    <div
-                      key={card.name}
-                      className="overflow-hidden rounded-lg bg-white shadow"
-                    >
-                      <div className="p-5">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0">
-                            <card.icon
-                              className="h-6 w-6 text-gray-400"
-                              aria-hidden="true"
-                            />
-                          </div>
-                          <div className="ml-5 w-0 flex-1">
-                            <dl>
-                              <dt className="truncate text-sm font-medium text-gray-500">
-                                {card.name}
-                              </dt>
-                              <dd>
-                                <div className="text-lg font-medium text-gray-900">
-                                  {card.amount}
-                                </div>
-                              </dd>
-                            </dl>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="bg-gray-50 px-5 py-3">
-                        <div className="text-sm">
-                          <a
-                            href={card.href}
-                            className="font-medium text-cyan-700 hover:text-cyan-900"
-                          >
-                            View all
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <h2 className="mx-auto mt-8 max-w-6xl px-4 text-lg font-medium leading-6 text-gray-900 sm:px-6 lg:px-8">
-                Recent activity
-              </h2>
-
-              {/* Activity list (smallest breakpoint only) */}
-              <div className="shadow sm:hidden">
-                <ul
-                  role="list"
-                  className="mt-2 divide-y divide-gray-200 overflow-hidden shadow sm:hidden"
-                >
-                  {transactions.map((transaction) => (
-                    <li key={transaction.id}>
-                      <a
-                        href={transaction.href}
-                        className="block bg-white px-4 py-4 hover:bg-gray-50"
-                      >
-                        <span className="flex items-center space-x-4">
-                          <span className="flex flex-1 space-x-2 truncate">
-                            <CashIcon
-                              className="h-5 w-5 flex-shrink-0 text-gray-400"
-                              aria-hidden="true"
-                            />
-                            <span className="flex flex-col truncate text-sm text-gray-500">
-                              <span className="truncate">
-                                {transaction.productName}
-                              </span>
-                              <span>
-                                <span className="font-medium text-gray-900">
-                                  {transaction.amount}
-                                </span>{' '}
-                                {transaction.currency}
-                              </span>
-                              <time dateTime={transaction.datetime}>
-                                {transaction.date}
-                              </time>
-                            </span>
-                          </span>
-                          <ChevronRightIcon
-                            className="h-5 w-5 flex-shrink-0 text-gray-400"
-                            aria-hidden="true"
-                          />
-                        </span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-
-                <nav
-                  className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3"
-                  aria-label="Pagination"
-                >
-                  <div className="flex flex-1 justify-between">
-                    <a
-                      href="#"
-                      className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500"
-                    >
-                      Previous
-                    </a>
-                    <a
-                      href="#"
-                      className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500"
-                    >
-                      Next
-                    </a>
-                  </div>
-                </nav>
-              </div>
-
-              {/* Activity table (small breakpoint and up) */}
-              <div className="hidden sm:block">
-                <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-                  <div className="mt-2 flex flex-col">
-                    <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead>
-                          <tr>
-                            <th className="bg-gray-50 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                              Invoice
-                            </th>
-                            <th className="bg-gray-50 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                              Transaction
-                            </th>
-                            <th className="bg-gray-50 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-                              Page Name
-                            </th>
-                            <th className="bg-gray-50 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-                              Amount
-                            </th>
-                            <th className="hidden bg-gray-50 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 md:block">
-                              Status
-                            </th>
-                            <th className="bg-gray-50 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-                              Date
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200 bg-white">
-                          {transactions.map((transaction) => (
-                            <tr key={transaction.id} className="bg-white">
-                              <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                                {transaction.id}
-                              </td>
-                              <td className="w-full max-w-0 whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                                <div className="flex">
-                                  <a
-                                    href={transaction.href}
-                                    className="group inline-flex space-x-2 truncate text-sm"
-                                  >
-                                    {/* <CashIcon
-                                      className="h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                                      aria-hidden="true"
-                                    /> */}
-                                    <p className="truncate text-gray-500 group-hover:text-gray-900">
-                                      {transaction.productName}
-                                    </p>
-                                  </a>
-                                </div>
-                              </td>
-                              <td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-                                {transaction.pageName}
-                              </td>
-                              <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
-                                <span className="font-medium text-gray-900">
-                                  {transaction.amount}{' '}
-                                </span>
-                                {transaction.currency}
-                              </td>
-                              <td className="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-500 md:block">
-                                <span
-                                  className={classNames(
-                                    // @ts-ignore
-                                    statusStyles[transaction.status],
-                                    'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize'
-                                  )}
-                                >
-                                  {transaction.status}
-                                </span>
-                              </td>
-                              <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
-                                <time dateTime={transaction.datetime}>
-                                  {transaction.date}
-                                </time>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                      {/* Pagination */}
-                      {/* <nav
-                        className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6"
-                        aria-label="Pagination"
-                      >
-                        <div className="hidden sm:block">
-                          <p className="text-sm text-gray-700">
-                            Showing <span className="font-medium">1</span> to{' '}
-                            <span className="font-medium">10</span> of{' '}
-                            <span className="font-medium">20</span> results
-                          </p>
-                        </div>
-                        <div className="flex flex-1 justify-between sm:justify-end">
-                          <a
-                            href="#"
-                            className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                          >
-                            Previous
-                          </a>
-                          <a
-                            href="#"
-                            className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                          >
-                            Next
-                          </a>
-                        </div>
-                      </nav> */}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {currentTab === 'overview' && <Overview cards={cards} transactions={transactions} />}
+            {currentTab === 'pages' && <Pages cards={cards} />}
+            {currentTab === 'transactions' && <Transactions cards={cards} transactions={transactions} />}
+            {currentTab === 'products' && <Products cards={cards} />}
+            {currentTab === 'settings' && <Settings cards={cards} />}
           </main>
         </div>
       </div>

@@ -84,9 +84,10 @@ const PaymentCard = ({ setIsModalOpen, merchantETH, merchantSOL, setQrCode, tota
 			}, {})
 			setQrCode(qrCode.dataURL)
 		} else if(option.toLowerCase() === 'solana') {
-			const connection = new Connection(clusterApiUrl('devnet'))
+			const connection = new Connection(clusterApiUrl('mainnet-beta'))
 
 			console.log('2.  a customer checkout \n');
+			console.log(merchantSOL)
 			const recipient = new PublicKey(merchantSOL);
 			console.log(price.toFixed(2))
 			const amount = new BigNumber(price.toFixed(2));
@@ -206,7 +207,7 @@ const PaymentCard = ({ setIsModalOpen, merchantETH, merchantSOL, setQrCode, tota
 				console.log(id)
 				await connectSOL()
 				const solProvider = window.solana
-				const solConnection = new Connection(clusterApiUrl('devnet'))
+				const solConnection = new Connection(clusterApiUrl('mainnet-beta'))
 				
 				var transaction = new Transaction().add(
 					SystemProgram.transfer({
