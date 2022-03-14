@@ -15,12 +15,12 @@ async function create(req: NextApiRequest, res: NextApiResponse<Product | string
 			.select('*')
 			.eq('id', id)
 		
-		if(error || data?.length === 0) {
+		if(!data || error || data?.length === 0) {
 			console.log(error)
 			res.status(400).send('Page was not created ' + JSON.stringify(error))
 			return
 		}
-		console.log(data)
+		
 		res.status(201).send(data[0])
 	}
 }

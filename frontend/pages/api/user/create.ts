@@ -22,7 +22,7 @@ async function create(req: NextApiRequest, res: NextApiResponse<User | string>) 
 			.from('User')
 			.insert([user])
 		
-		if(error || data?.length === 0) {
+		if(!data || error || data?.length === 0) {
 			res.status(400).send('Page was not created ' + JSON.stringify(error))
 			return
 		}

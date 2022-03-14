@@ -25,7 +25,7 @@ async function get(req: NextApiRequest, res: NextApiResponse<Product[] | string>
 			.from('product')
 			.select('*')
 		
-		if(error || data?.length === 0) {
+		if(!data || error || data?.length === 0) {
 			console.log(error)
 			res.status(400).send('Page was not created ' + JSON.stringify(error))
 			return

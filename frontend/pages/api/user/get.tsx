@@ -19,7 +19,7 @@ async function create(req: NextApiRequest, res: NextApiResponse<User | string>) 
 			.select('*')
 			.eq('email', email)
 		
-		if(error || data?.length === 0) {
+		if(!data || error || data?.length === 0) {
 			res.status(400).send('Page was not created ' + JSON.stringify(error))
 			return
 		}

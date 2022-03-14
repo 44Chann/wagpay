@@ -17,7 +17,7 @@ async function create(req: NextApiRequest, res: NextApiResponse<Product | string
 			.from('product')
 			.insert([product])
 		
-		if(error || data?.length === 0) {
+		if(!data || error || data?.length === 0) {
 			res.status(400).send('Page was not created ' + JSON.stringify(error))
 			return
 		}

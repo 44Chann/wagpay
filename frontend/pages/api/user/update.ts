@@ -23,7 +23,7 @@ async function update(req: NextApiRequest, res: NextApiResponse<User | string>) 
 			.update(userBody)
 			.match({ email: user?.email })
 
-		if(error || data?.length === 0) {
+		if(!data || error || data?.length === 0) {
 			res.status(400).send('User was not created ' + JSON.stringify(error))
 			return
 		}

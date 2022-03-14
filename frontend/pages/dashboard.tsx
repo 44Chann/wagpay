@@ -106,7 +106,7 @@ function classNames(...classes: any) {
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [currentTab, setCurrentTab] = useState('overview')
-  const [user, setUser] = useState<User>({})
+  const [user, setUser] = useState<User>({} as User)
 
   const changeTab = (nextTab: string, nextId: number) => {
     const index = navigation.map((e) => {return e.comp_name}).indexOf(currentTab)
@@ -464,7 +464,7 @@ export default function Dashboard() {
             {currentTab === 'pages' && <Pages cards={cards} />}
             {currentTab === 'transactions' && <Transactions cards={cards} transactions={transactions} />}
             {currentTab === 'products' && <Products cards={cards} />}
-            {currentTab === 'settings' && <Settings cards={cards} />}
+            {currentTab === 'settings' && <Settings cards={cards} transactions={transactions} />}
           </main>
         </div>
       </div>
