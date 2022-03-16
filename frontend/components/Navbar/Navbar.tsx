@@ -17,11 +17,11 @@ const Navbar = () => {
 					},
 					{
 						name: "Developers",
-						link: "/developers",
+						link: "/dashboard",
 					},
 					{
-						name: "Products",
-						link: "/products",
+						name: "Login",
+						link: "/auth",
 					},
 					{
 						name: "Use Cases",

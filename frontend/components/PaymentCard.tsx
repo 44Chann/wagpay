@@ -35,13 +35,17 @@ interface Props {
 	merchantSOL: string
 	merchantETH: string
 	totalPrice: number
+	fields: any[]
+	storeId: number
+	createTransaction: Function
+	updateTransaction: Function
 }
 
 const CrossIcon = () => {
 	return <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
 }
 
-const PaymentCard = ({ setIsModalOpen, merchantETH, merchantSOL, setQrCode, totalPrice }: Props) => {
+const PaymentCard = ({ fields, createTransaction, updateTransaction, setIsModalOpen, merchantETH, merchantSOL, setQrCode, totalPrice }: Props) => {
 	const notifications = useNotifications()
 	const [{ data: connectData, error: connectError }, connect] = useConnect()
 	const [{ data: accountData }, disconnect] = useAccount({
@@ -67,6 +71,7 @@ const PaymentCard = ({ setIsModalOpen, merchantETH, merchantSOL, setQrCode, tota
 	const [option, setOption] = useState<supported_currencies>('Ethereum')
 	const [wallet, setWallet] = useState('Metamask')
 	const [price, setPrice] = useState(0)
+	const [fieldValues, setFieldValues] = useState<any[]>(fields)
 
 	useEffect(() => {
 		if(accountData && accountData.address) setETH(accountData.address)
@@ -188,7 +193,12 @@ const PaymentCard = ({ setIsModalOpen, merchantETH, merchantSOL, setQrCode, tota
 	}
 
 	const pay = async () => {
-		if(option.toLowerCase() === 'solana') {
+		if(totalPrice <= 0) {
+			alert('Select a Product')
+			return
+		}
+
+		if(option.toLowerCase() === 'solana') {			
 			const id = notifications.showNotification({
 				id: 'hello-there',
 				disallowClose: true,
@@ -226,6 +236,9 @@ const PaymentCard = ({ setIsModalOpen, merchantETH, merchantSOL, setQrCode, tota
 				}
 				
 				let signed = await solProvider.signTransaction(transaction);
+
+				var txId = await createTransaction(email, fields, '', solProvider.publicKey)
+
 				let signature = await solConnection.sendRawTransaction(signed.serialize());
 				await solConnection.confirmTransaction(signature);
 				setTimeout(() => {
@@ -239,8 +252,12 @@ const PaymentCard = ({ setIsModalOpen, merchantETH, merchantSOL, setQrCode, tota
 					  autoClose: 2000,
 					});
 				}, 3000);
+
+				updateTransaction(txId, true, signature)
+
 				return signature
 			} catch (e) {
+				updateTransaction(txId, false, '')
 				setTimeout(() => {
 					notifications.updateNotification(id, {
 					  id,
@@ -254,7 +271,20 @@ const PaymentCard = ({ setIsModalOpen, merchantETH, merchantSOL, setQrCode, tota
 				}, 3000);
 			}
 		} else if(option.toLowerCase() === 'ethereum' || option.toLowerCase() === 'usdc (ethereum)') {
-			console.log(wallet)
+			const id = notifications.showNotification({
+				id: 'hello-there',
+				disallowClose: true,
+				onClose: () => console.log('unmounted'),
+				onOpen: () => console.log('mounted'),
+				autoClose: false,
+				title: "Transaction Creating",
+				message: 'Your Ethereum Transaction is creating',
+				color: 'red',
+				icon: <CrossIcon />,
+				className: 'my-notification-class',
+				style: { backgroundColor: 'red' },
+				loading: true,
+			});
 			const account = await connectData.connectors.find(connector => connector.name.toLowerCase() === wallet.toLowerCase())?.connect()
 			setETH(account?.account as string)
 			const ethProvider = new ethers.providers.Web3Provider(window.ethereum as ExternalProvider);
@@ -264,9 +294,37 @@ const PaymentCard = ({ setIsModalOpen, merchantETH, merchantSOL, setQrCode, tota
 					to: merchantETH,
 					value: ethers.utils.parseEther(price.toString())
 				})
-		
-				return tx.hash
+				
+				var txId = await createTransaction(email, fields, account?.account, '')
+				
+				setTimeout(() => {
+					notifications.updateNotification(id, {
+					  id,
+					  color: 'green',
+					  title: 'Transaction Successful',
+					  message:
+						'Notification will close in 2 seconds, you can close this notification now',
+					  icon: <CrossIcon />,
+					  autoClose: 2000,
+					});
+				}, 3000);
+				console.log(tx)
+				updateTransaction(txId, true, tx.hash)
+				return tx
 			} catch (e) {
+				let txId = await createTransaction(email, fields, account?.account, '')
+				updateTransaction(txId, false, '')
+				setTimeout(() => {
+					notifications.updateNotification(id, {
+					  id,
+					  color: 'red',
+					  title: 'Transaction UnSuccessful',
+					  message:
+						'Notification will clo`se in 2 seconds, you can close this notification now',
+					  icon: <CrossIcon />,
+					  autoClose: 2000,
+					});
+				}, 3000);
 				console.log("WagPay: Can't send transaction!", e)
 			}
 		}
@@ -286,6 +344,18 @@ const PaymentCard = ({ setIsModalOpen, merchantETH, merchantSOL, setQrCode, tota
 		}
 	}, [totalPrice, option])
 
+	const changeField = (idx: number, value: any) => {
+		setFieldValues((previousState) => {
+			let values = [...fieldValues]
+			values[idx].value = value
+			return values
+		})
+	}
+
+	useEffect(() => {
+		console.log(fieldValues, 'fieldValues')
+	}, [fieldValues])
+
 	return (
 		<div className='w-full lg:w-1/2 h-full font-urban flex flex-col justify-center items-center lg:items-end space-y-10'>
 			<div className="font-urban shadow-xl relative w-[300px] xl:w-[449px] h-[545px] rounded-xl mt-10 flex flex-col justify-center items-center overflow-hidden">
@@ -293,10 +363,14 @@ const PaymentCard = ({ setIsModalOpen, merchantETH, merchantSOL, setQrCode, tota
 				<div className="select-none blur-3xl w-96 h-96 -bottom-20 -right-36 absolute bg-[#6C7EE1]/50 rounded-full"></div>
 				<div className='z-50 w-full h-full p-5 flex flex-col justify-center items-center space-y-5'>
 					<h1 className='text-2xl font-bold'>WagPay</h1>
-					<input type="email" placeholder="satyam@gmail.com" className="font-semibold rounded-xl w-full pl-4 py-4 opacity-80 border-0 outline-none text-sm" value={email} onChange={(e: any) => setEmail(e.target.value)} />
 					<div className="bg-white opacity-80 flex justify-between w-full  rounded-xl">
-						<input type="text" placeholder="Name" className="font-semibold rounded-xl w-full pl-4 py-4 opacity-80 border-0 outline-none text-sm" value={username} onChange={(e: any) => setUsername(e.target.value)} />
+						<input value={email} onChange={(e) => setEmail(e.target.value)}  type='email' placeholder="Email" className="font-semibold rounded-xl w-full pl-4 py-4 opacity-80 border-0 outline-none text-sm" />
 					</div>
+					{fields.map((value, idx) => (
+						<div className="bg-white opacity-80 flex justify-between w-full  rounded-xl">
+							<input value={fieldValues[idx].value} onChange={(e) => changeField(idx, e.target.value)}  type={value.type} placeholder={value.name} className="font-semibold rounded-xl w-full pl-4 py-4 opacity-80 border-0 outline-none text-sm" />
+						</div>
+					))}
 					<div className="w-full flex justify-between">
 						<select className="form-select appearance-none
 							block

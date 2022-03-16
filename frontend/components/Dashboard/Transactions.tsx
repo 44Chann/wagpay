@@ -19,6 +19,9 @@ import {
 	OfficeBuildingIcon,
 	SearchIcon,
 } from '@heroicons/react/solid'
+import { useEffect, useState } from 'react'
+import { supabase } from '../../supabase'
+import Link from 'next/link'
 
 const statusStyles = {
 	success: 'bg-green-100 text-green-800',
@@ -32,10 +35,43 @@ function classNames(...classes: any) {
 
 interface Props {
 	cards: any[]
-	transactions: any[]
 }
 
-const Transactions = ({ cards, transactions }: Props) => {
+const Transactions = ({ cards }: Props) => {
+	const [transactions, setTransactions] = useState<any[]>([])
+	
+	const fetchTransactions = async () => {
+		const res = await fetch('/api/submissions/get', {
+			headers: {
+				'bearer-token': supabase.auth.session()?.access_token as string
+			}
+		})
+		const data = await res.json()
+		
+		for(let j=0;j<data.length;j++) {
+			const value = data[j]
+			const products = value.products
+			if(!data[j].total_prices) data[j].total_prices = 0
+			var total_price = 0;
+			for(let i=0;i<products.length;i++) {
+				const ress = await fetch(`http://localhost:3000/api/products/${products[i]}`)
+				const res = await ress.json()
+
+				data[j].products[i] = res
+				total_price += res.discounted_price
+			}
+			data[j].total_prices = total_price
+		}
+		setTransactions(data)
+	}
+
+	useEffect(() => {
+		console.log('122')
+		fetchTransactions()
+	}, [])
+
+	useEffect(() => console.log(transactions), [transactions])
+	
 	return (
 		<div className="mt-8">
 			<div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -96,11 +132,11 @@ const Transactions = ({ cards, transactions }: Props) => {
 				role="list"
 				className="mt-2 divide-y divide-gray-200 overflow-hidden shadow sm:hidden"
 			>
-				{transactions.map((transaction) => (
-				<li key={transaction.id}>
+				{transactions && transactions.map((transaction: any) => (
+					<li key={transaction.id}>
 					<a
-					href={transaction.href}
-					className="block bg-white px-4 py-4 hover:bg-gray-50"
+						// href={transaction.href}
+						className="block bg-white px-4 py-4 hover:bg-gray-50"
 					>
 					<span className="flex items-center space-x-4">
 						<span className="flex flex-1 space-x-2 truncate">
@@ -110,17 +146,13 @@ const Transactions = ({ cards, transactions }: Props) => {
 						/>
 						<span className="flex flex-col truncate text-sm text-gray-500">
 							<span className="truncate">
-							{transaction.productName}
+							{transaction.name}
 							</span>
 							<span>
 							<span className="font-medium text-gray-900">
-								{transaction.amount}
+								{transaction.total_prices}
 							</span>{' '}
-							{transaction.currency}
 							</span>
-							<time dateTime={transaction.datetime}>
-							{transaction.date}
-							</time>
 						</span>
 						</span>
 						<ChevronRightIcon
@@ -177,13 +209,10 @@ const Transactions = ({ cards, transactions }: Props) => {
 						<th className="hidden bg-gray-50 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 md:block">
 							Status
 						</th>
-						<th className="bg-gray-50 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-							Date
-						</th>
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-gray-200 bg-white">
-						{transactions.map((transaction) => (
+						{transactions && transactions.map((transaction: any) => (
 						<tr key={transaction.id} className="bg-white">
 							<td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
 							{transaction.id}
@@ -191,43 +220,46 @@ const Transactions = ({ cards, transactions }: Props) => {
 							<td className="w-full max-w-0 whitespace-nowrap px-6 py-4 text-sm text-gray-900">
 							<div className="flex">
 								<a
-								href={transaction.href}
-								className="group inline-flex space-x-2 truncate text-sm"
+									// href={transaction.href}
+									className="group inline-flex space-x-2 truncate text-sm"
 								>
-								{/* <CashIcon
-									className="h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-									aria-hidden="true"
-								/> */}
-								<p className="truncate text-gray-500 group-hover:text-gray-900">
-									{transaction.productName}
-								</p>
+									<p className="truncate text-gray-500 group-hover:text-gray-900">
+										{transaction.name} ({transaction.email})
+									</p>
 								</a>
 							</div>
 							</td>
 							<td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-							{transaction.pageName}
+								<Link href={`${transaction.page_id.slug}`}>
+									{transaction.page_id.title}
+								</Link>
 							</td>
 							<td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
-							<span className="font-medium text-gray-900">
-								{transaction.amount}{' '}
-							</span>
-							{transaction.currency}
+								<span className="font-medium text-gray-900">
+									{console.log(Object.keys(transaction))}
+									${transaction.total_prices}{' '}
+								</span>
+								USD
 							</td>
 							<td className="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-500 md:block">
 							<span
 								className={classNames(
 								// @ts-ignore
-								statusStyles[transaction.status],
+								// statusStyles[transaction.status],
 								'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize'
 								)}
 							>
-								{transaction.status}
+								{transaction.eth_address && 
+									<a href={`https://etherscan.io/tx/${transaction.transaction_hash}`} className='flex space-x-3'>
+										<span>See Transaction on</span> <img src="https://etherscan.io/images/brandassets/etherscan-logo.png" className='w-14' alt="" />
+									</a>
+								}
+								{transaction.sol_address && 
+									<a href={`https://solscan.io/tx/${transaction.transaction_hash}`} className='flex space-x-3'>
+										<span>See Transaction on</span> <img src="https://solscan.io/static/media/solana-solana-scan-blue.5ffb9996.svg" className='w-14' alt="" />
+									</a>
+								}
 							</span>
-							</td>
-							<td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
-							<time dateTime={transaction.datetime}>
-								{transaction.date}
-							</time>
 							</td>
 						</tr>
 						))}

@@ -22,26 +22,22 @@ interface Page {
 
 async function create(req: NextApiRequest, res: NextApiResponse<any | string>) {
 	let jwt = await verifyUser(req, res)
-	let { user, error: userError } = await supabase.auth.api.getUser(req.headers['bearer-token'] as string)
+	let { user, error: userErrors } = await supabase.auth.api.getUser(req.headers['bearer-token'] as string)
+	const { data: userData, error: userError } = await supabase
+		.from('User')
+		.select('*')
+		.eq('email', user?.email)
 	
-	if(req.method === 'GET') {
-		var limit = 0
-		try {
-			limit = Number(req.query['limit'])
-		} catch(e) {}
+	if(!user || !userData || userError || userData?.length === 0) {
+		console.log(userError)
+		res.status(400).send('Page was not created ' + JSON.stringify(userError))
+		return
+	}
 
-		if(limit > 0) {
-			var { data, error } = await supabase
-				.from('pages')
-				.select('*,user!inner(*)')
-				.eq('user.email', user?.email)
-				.limit(limit)
-		} else {
-			var { data, error } = await supabase
-				.from('pages')
-				.select('*,user!inner(*)')
-				.eq('user.email', user?.email)
-		}
+	if(req.method === 'GET') {
+		const { data, error } = await supabase.rpc('get_total_visits', {
+			user_id: userData[0].id
+		})
 		
 		if(!data || error || data?.length === 0) {
 			res.status(400).send('Page was not created ' + JSON.stringify(error))

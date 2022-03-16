@@ -28,7 +28,7 @@ async function create(req: NextApiRequest, res: NextApiResponse<any | string>) {
 			.from('pages')
 			.select('*')
 			.eq('slug', slug)
-		
+		console.log(data)
 		if(!data || error || data?.length === 0) {
 			res.status(400).send('Page was not created ' + JSON.stringify(error))
 			return

@@ -7,6 +7,7 @@ import { useRouter } from "next/router"
 import { Product as ProductInterface } from './api/product'
 
 interface Page {
+	id: number
 	title: string
 	logo: string
 	description: string
@@ -18,6 +19,7 @@ interface Page {
 	sol_address?: string
 	user: number
 	products: ProductInterface[]
+	fields: any[]
 }
 
 interface Props {
@@ -26,6 +28,8 @@ interface Props {
 
 export const getServerSideProps = async (context: any) => {
 	const res = await fetch(`http://localhost:3000/api/pages/${context.params.store}`)
+	console.log(`http://localhost:3000/api/pages/${context.params.store}`)
+	// console.log(await res.json())
 	const store: Page = await res.json()
 
 	return {
@@ -37,6 +41,17 @@ export const getServerSideProps = async (context: any) => {
 
 const Store = ({ store }: Props) => {
 	const { query } = useRouter()
+
+	const updateVisit = async () => {
+		console.log(store.id)
+		let data = await fetch(`http://localhost:3000/api/pages/updateVisits?id=${store.id}`, {
+			method: 'PATCH'
+		})
+	}
+
+	useEffect(() => {
+		updateVisit()
+	}, [])
 	
 	useEffect(() => {
 		if(query.products) {
@@ -93,6 +108,40 @@ const Store = ({ store }: Props) => {
 		setSelectedProducts(unique)
 	}
 
+	const createTransaction = async (email: string, fields: any, eth: string, sol: string) => {
+		const transaction = {
+			email: email,
+			fields: fields,
+			eth_address: eth,
+			sol_address: sol,
+			page_id: store.id,
+			products: selectedProducts.map((value) => value.id)
+		}
+
+		const data = await fetch('/api/submissions/create', {
+			method: 'POST',
+			body: JSON.stringify(transaction)
+		})
+		const res = await data.json()
+
+		return res.id
+	}
+
+	const updateTransaction = async (transactionId:number, successful: boolean, transactionHash: string) => {
+		const transaction = {
+			id: transactionId,
+			transaction_hash: transactionHash
+		}
+		console.log(transaction)
+		const data = await fetch('/api/submissions/update', {
+			method: 'POST',
+			body: JSON.stringify(transaction)
+		})
+		const res = await data.json()
+
+		console.log(res)
+	}
+
 	return (
 		<div className="relative bg-[#6C7EE1]/20 w-full min-h-screen flex justify-start items-center font-urban">
 			<div className="w-1/2 h-full flex flex-col justify-center items-start pl-24 space-y-5">
@@ -107,7 +156,7 @@ const Store = ({ store }: Props) => {
 				</p>
 			</div>
 			<div className="w-1/2 h-full flex justify-center items-center">
-				<PaymentCard totalPrice={totalPrice} merchantETH={store.eth_address as string} merchantSOL={store.sol_address as string} setIsModalOpen={setIsModalOpen} setQrCode={setQrCode} />
+				<PaymentCard updateTransaction={updateTransaction} createTransaction={createTransaction} storeId={store.id} fields={store.fields} totalPrice={totalPrice} merchantETH={store.eth_address as string} merchantSOL={store.sol_address as string} setIsModalOpen={setIsModalOpen} setQrCode={setQrCode} />
 			</div>
 			<div className={(isModalOpen ? "" : "hidden") + " w-full h-full backdrop-blur-sm absolute z-50"} onClick={() => setIsModalOpen(false)}>
 				<div className={(isModalOpen ? "" : "hidden") + " absolute fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-white w-64 h-64"}>

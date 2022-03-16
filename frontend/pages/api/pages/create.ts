@@ -24,9 +24,28 @@ async function create(req: NextApiRequest, res: NextApiResponse<Page | string>) 
 	let jwt = await verifyUser(req, res)
 	let { user, error } = await supabase.auth.api.getUser(req.headers['bearer-token'] as string)
 	
+	if(!user) {
+		res.status(400).send("Wrong User")
+		return
+	}
+
+	const { data: userData, error: userError } = await supabase
+		.from('User')
+		.select('*')
+		.eq('email', user.email)
+
+	if(!userData || error || userData.length == 0) {
+		res.status(400).send("Wrong User")
+		return
+	}
+
 	if(req.method === 'POST') {
 		const pageData = JSON.parse(req.body) as Page
 		let { products, ...page } = pageData
+		page.user = userData[0].id
+
+		if(!page.eth_address) page.eth_address = userData[0].eth_address
+		if(!page.sol_address) page.sol_address = userData[0].sol_address
 		
 		console.log(page, products)
 		const { data, error } = await supabase

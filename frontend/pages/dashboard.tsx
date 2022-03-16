@@ -29,6 +29,7 @@ import {
 } from '@heroicons/react/solid'
 import { supabase } from '../supabase'
 import { User } from './api/userType'
+import PageHeader from '../components/Dashboard/PageHeader'
 
 const navigation = [
   { name: 'Overview', comp_name: 'overview', icon: HomeIcon, current: true },
@@ -44,14 +45,14 @@ const secondaryNavigation = [
 ]
 
 const cards = [
-  { name: 'Monthly visits', href: '#', icon: TrendingUpIcon, amount: '320234' },
+  { name: 'Total visits', href: '#', icon: TrendingUpIcon, amount: '320234' },
   {
     name: 'Products Sold',
     href: '#',
     icon: TrendingUpIcon,
-    amount: '30,659.45',
+    amount: '0',
   },
-  { name: 'Earned', href: '#', icon: CashIcon, amount: '$30,659.45' },
+  { name: 'Earned', href: '#', icon: CashIcon, amount: '0' },
   { name: 'Pages', href: '#', icon: CollectionIcon, amount: '2' },
   // More items...
 ]
@@ -107,6 +108,60 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [currentTab, setCurrentTab] = useState('overview')
   const [user, setUser] = useState<User>({} as User)
+	const [visits, setVisits] = useState(0)
+	const [money, setMoney] = useState('$0')
+	const [sold, setSold] = useState(0)
+
+  const getMoneyEarned = async () => {
+    const data = await fetch('/api/products/money_earned', {
+			headers: {
+				'bearer-token': supabase.auth.session()?.access_token as string
+			}
+		})
+		const res = await data.json()
+    cards[2].amount = '$' + res
+		setMoney('$' + res)
+  }
+
+  const totalProductSold = async () => {
+    const data = await fetch('/api/products/product_sold', {
+			headers: {
+				'bearer-token': supabase.auth.session()?.access_token as string
+			}
+		})
+		const res = await data.json()
+    cards[1].amount = res
+		setSold(res)
+  }
+
+  const totalVisits = async () => {
+    const data = await fetch('/api/pages/visits', {
+			headers: {
+				'bearer-token': supabase.auth.session()?.access_token as string
+			}
+		})
+		const res = await data.json()
+    cards[0].amount = res
+		setVisits(res)
+  }
+
+  const totalPages = async () => {
+    const data = await fetch('/api/pages/number_of_pages', {
+			headers: {
+				'bearer-token': supabase.auth.session()?.access_token as string
+			}
+		})
+		const res = await data.json()
+    cards[3].amount = res
+		setVisits(res)
+  }
+
+  useEffect(() => {
+    getMoneyEarned()
+    totalProductSold()
+    totalVisits()
+    totalPages()
+  }, [])
 
   const changeTab = (nextTab: string, nextId: number) => {
     const index = navigation.map((e) => {return e.comp_name}).indexOf(currentTab)
@@ -129,7 +184,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="min-h-full">
+      <div className="min-h-full font-urban">
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
@@ -400,69 +455,10 @@ export default function Dashboard() {
           </div>
           <main className="flex-1 pb-8">
             {/* Page header */}
-            <div className="bg-white shadow">
-              <div className="px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
-                <div className="py-6 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center">
-                      <img
-                        className="hidden h-16 w-16 rounded-full sm:block"
-                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.6&w=256&h=256&q=80"
-                        alt=""
-                      />
-                      <div>
-                        <div className="flex items-center">
-                          <img
-                            className="h-16 w-16 rounded-full sm:hidden"
-                            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.6&w=256&h=256&q=80"
-                            alt=""
-                          />
-                          <h1 className="ml-3 font-inter text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:leading-9">
-                            Good morning, {user.username}
-                          </h1>
-                        </div>
-                        <dl className="mt-6 flex flex-col sm:ml-3 sm:mt-1 sm:flex-row sm:flex-wrap">
-                          <dt className="sr-only">Company</dt>
-                          <dd className="flex items-center text-sm font-medium capitalize text-gray-500 sm:mr-6">
-                            <OfficeBuildingIcon
-                              className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                              aria-hidden="true"
-                            />
-                            India
-                          </dd>
-                          <dt className="sr-only">Account status</dt>
-                          <dd className="mt-3 flex items-center text-sm font-medium capitalize text-gray-500 sm:mr-6 sm:mt-0">
-                            <CheckCircleIcon
-                              className="mr-1.5 h-5 w-5 flex-shrink-0 text-green-400"
-                              aria-hidden="true"
-                            />
-                            Verified account
-                          </dd>
-                        </dl>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-6 flex space-x-3 md:mt-0 md:ml-4">
-                    <button
-                      type="button"
-                      className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
-                    >
-                      Edit Profile
-                    </button>
-                    <button
-                      type="button"
-                      className="flex space-x-2 items-center rounded-md border border-transparent bg-cyan-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
-                    >
-                      <span>New Store</span>
-                      <span className='w-5 h-5'><PlusIcon /></span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {currentTab === 'overview' && <Overview cards={cards} transactions={transactions} />}
+            <PageHeader user={user} />
+            {currentTab === 'overview' && <Overview cards={cards} />}
             {currentTab === 'pages' && <Pages cards={cards} />}
-            {currentTab === 'transactions' && <Transactions cards={cards} transactions={transactions} />}
+            {currentTab === 'transactions' && <Transactions cards={cards} />}
             {currentTab === 'products' && <Products cards={cards} />}
             {currentTab === 'settings' && <Settings cards={cards} transactions={transactions} />}
           </main>

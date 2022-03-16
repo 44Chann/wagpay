@@ -89,7 +89,7 @@ const Claim = () => {
 	}
 	
 	return (
-		<div className='w-full min-h-screen font-urban flex flex-col lg:flex-row justify-center lg:justify-between items-center lg:px-96 bg-[#f5a94e]/20 font-semibold'>
+		<div className='w-full min-h-screen font-urban flex flex-col lg:flex-row justify-center lg:justify-between items-center lg:px-96 bg-[#6C7EE1]/20 font-semibold'>
 			<div className='w-full flex flex-col justify-center items-center lg:w-1/2 space-y-5'>
 				<h1 className='font-black text-5xl'>Next-Gen Crypto Payment Solution for Businesses</h1>
 				<p className='font-semibold text-xl'>Claim your WagPay Username and get a chance to win exlusive membership NFT</p>

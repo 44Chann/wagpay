@@ -22,6 +22,7 @@ import {
 import { useEffect, useState } from 'react'
 import { Product as ProductInterface } from '../../pages/api/product'
 import { supabase } from '../../supabase'
+import Link from 'next/link'
 
 const statusStyles = {
 	success: 'bg-green-100 text-green-800',
@@ -37,17 +38,23 @@ interface Props {
 	cards: any[]
 }
 
+interface Data {
+	product_id: ProductInterface
+	page_id: any
+	sold: number
+}
+
 const Products = ({ cards }: Props) => {
-	const [products, setProducts] = useState<ProductInterface[]>([])
+	const [products, setProducts] = useState<Data[]>([])
 	
 	const fetchProducts = async () => {
-		const data = await fetch('/api/products/get', {
+		const data = await fetch('/api/products/userproducts', {
 			headers: {
 				'bearer-token': supabase.auth.session()?.access_token as string
 			}
 		})
 		const res = await data.json()
-
+		console.log(res)
 		setProducts(res)
 	}
 
@@ -116,7 +123,7 @@ const Products = ({ cards }: Props) => {
 				className="mt-2 divide-y divide-gray-200 overflow-hidden shadow sm:hidden"
 			>
 				{products.map((product) => (
-				<li key={product.id}>
+				<li key={product.product_id.id}>
 					<a
 						className="block bg-white px-4 py-4 hover:bg-gray-50"
 					>
@@ -128,11 +135,11 @@ const Products = ({ cards }: Props) => {
 						/>
 						<span className="flex flex-col truncate text-sm text-gray-500">
 							<span className="truncate">
-								{product.name}
+								{product.product_id.name}
 							</span>
 							<span>
 							<span className="font-medium text-gray-900">
-								{product.discounted_price}
+								{product.product_id.discounted_price}
 							</span>{' '}
 							$
 							</span>
@@ -178,65 +185,71 @@ const Products = ({ cards }: Props) => {
 					<thead>
 						<tr>
 						<th className="bg-gray-50 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-							Invoice
-						</th>
-						<th className="bg-gray-50 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-							Transaction
+							Product
 						</th>
 						<th className="bg-gray-50 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-							Page Name
+							Description
 						</th>
 						<th className="bg-gray-50 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-							Amount
+							Page
+						</th>
+						<th className="bg-gray-50 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+							Discounted Amount
 						</th>
 						<th className="hidden bg-gray-50 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 md:block">
-							Status
+							Amount
 						</th>
 						<th className="bg-gray-50 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-							Date
+							Sold
 						</th>
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-gray-200 bg-white">
 						{products.map((product) => (
-						<tr key={product.id} className="bg-white">
-							<td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-							{product.id}
-							</td>
+						<tr key={product.product_id.id} className="bg-white">
 							<td className="w-full max-w-0 whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-							<div className="flex">
-								<a
-									className="group inline-flex space-x-2 truncate text-sm"
-								>
-								{/* <CashIcon
-									className="h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-									aria-hidden="true"
-								/> */}
-								<p className="truncate text-gray-500 group-hover:text-gray-900">
-									{product.name}
-								</p>
-								</a>
-							</div>
+								<div className="flex">
+									<a
+										className="group inline-flex space-x-2 truncate text-sm"
+									>
+									{/* <CashIcon
+										className="h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+										aria-hidden="true"
+									/> */}
+									<p className="truncate text-gray-500 group-hover:text-gray-900">
+										{product.product_id.name}
+									</p>
+									</a>
+								</div>
 							</td>
-							<td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-								{product.description}
+							<td className='w-96 truncate whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500'>
+								<span className='w-96 truncate inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize'>
+									{product.product_id.description}
+								</span>...
 							</td>
 							<td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
-							<span className="font-medium text-gray-900">
-								{product.discounted_price}{' '}
-							</span>
-							$
+								<Link href={`/${product.page_id.slug}`} >
+									<a className="font-medium text-gray-900">
+										{product.page_id.title}{' '}
+									</a>
+								</Link>
+							</td>
+							<td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
+								<span className="font-medium text-gray-900">
+									{product.product_id.discounted_price}{' '}
+								</span>
+								$
 							</td>
 							<td className="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-500 md:block">
-							<span
-								className={classNames(
-								// @ts-ignore
-								statusStyles[''],
-								'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize'
-								)}
-							>
-								{product.price}
-							</span>
+								<span className="font-medium text-gray-900">
+									{product.product_id.price}{' '}
+								</span>
+								$
+							</td>
+							<td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+								<span className="font-medium text-gray-900">
+									{product.sold}{' '}
+								</span>
 							</td>
 						</tr>
 						))}

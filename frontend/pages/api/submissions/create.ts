@@ -13,16 +13,16 @@ interface Submission {
 	eth_address?: string
 	sol_address?: string
 	products: number[]
-	page: number
+	page_id: number
 }
 
 async function create(req: NextApiRequest, res: NextApiResponse<Submission | string>) {
-	let jwt = await verifyUser(req, res)
-	let { user, error } = await supabase.auth.api.getUser(req.headers['bearer-token'] as string)
 	
 	if(req.method === 'POST') {
 		const submissionData = JSON.parse(req.body) as Submission
-		let { page, products, ...submission } = submissionData
+		let { ...submission } = submissionData
+
+		let products = submissionData.products
 
 		if(products.length <= 0) {
 			res.status(403).send('Select Products first!')
@@ -36,7 +36,7 @@ async function create(req: NextApiRequest, res: NextApiResponse<Submission | str
 		}
 		
 		for(let i=0;i<products.length;i++) {
-			const { data, error } = await supabase.from('bought').insert([{ product_id: products[i], submission_id:  sub_data[0].id, page_id: page }])
+			const { data, error } = await supabase.from('bought').insert([{ product_id: products[i], submission_id:  sub_data[0].id }])
 			
 			if(!data || error || data?.length === 0) {
 				res.status(400).send('Page was not created ' + JSON.stringify(error))
@@ -44,7 +44,7 @@ async function create(req: NextApiRequest, res: NextApiResponse<Submission | str
 			}
 		}
 
-		res.status(201).send(submission as Submission)
+		res.status(201).send(sub_data[0] as Submission)
 	}
 }
 
