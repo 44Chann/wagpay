@@ -113,7 +113,7 @@ const Overview = ({ cards }: Props) => {
 		fetchTransactions()
 	}, [])
 
-	const [pages, setPages] = useState<Page[]>()
+	const [pages, setPages] = useState<Page[]>([])
 
 	const fetchPages = async () => {
 		const data = await fetch('/api/pages/get', {
@@ -189,7 +189,7 @@ const Overview = ({ cards }: Props) => {
 				role="list"
 				className="mt-2 divide-y divide-gray-200 overflow-hidden shadow sm:hidden"
 			>
-				{transactions.map((transaction) => (
+				{transactions && transactions.length > 0 && transactions.map((transaction) => (
 				<li key={transaction.id}>
 					<a
 					href={transaction.href}
@@ -273,7 +273,7 @@ const Overview = ({ cards }: Props) => {
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-gray-200 bg-white">
-					{transactions && transactions.map((transaction: any) => (
+					{transactions && transactions.length > 0 && transactions.map((transaction: any) => (
 						<tr key={transaction.id} className="bg-white">
 							<td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
 							{transaction.id}
@@ -297,7 +297,6 @@ const Overview = ({ cards }: Props) => {
 							</td>
 							<td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
 								<span className="font-medium text-gray-900">
-									{console.log(Object.keys(transaction))}
 									${transaction.total_prices}{' '}
 								</span>
 								USD

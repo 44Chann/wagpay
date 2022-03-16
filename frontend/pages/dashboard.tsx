@@ -3,7 +3,7 @@ import Pages from '../components/Dashboard/Pages'
 import Transactions from '../components/Dashboard/Transactions'
 import Products from '../components/Dashboard/Products'
 import Settings from '../components/Dashboard/Settings'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useState } from 'react'
 import { Dialog, Menu, Transition } from '@headlessui/react'
 import {
   CollectionIcon,
@@ -30,6 +30,7 @@ import {
 import { supabase } from '../supabase'
 import { User } from './api/userType'
 import PageHeader from '../components/Dashboard/PageHeader'
+import { useRouter } from 'next/router'
 
 const navigation = [
   { name: 'Overview', comp_name: 'overview', icon: HomeIcon, current: true },
@@ -104,56 +105,87 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
 }
 
+
 export default function Dashboard() {
+  const { push } = useRouter()
+  
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [currentTab, setCurrentTab] = useState('overview')
   const [user, setUser] = useState<User>({} as User)
 	const [visits, setVisits] = useState(0)
 	const [money, setMoney] = useState('$0')
 	const [sold, setSold] = useState(0)
+  const [running, setRunning] = useState(true)
+
+  useLayoutEffect(() => {
+    try {
+      const user = supabase.auth.user()
+      console.log('user1')
+      if(!user) {
+        setRunning(false)
+        console.log('user')
+        push('/auth')
+      }
+      console.log('user2')
+    } catch (e) {
+      setRunning(false)
+      push('/auth')
+      console.log('not logged in')
+    }
+  }, [])
+
+  useEffect(() => console.log(running, 'running'), [running])
 
   const getMoneyEarned = async () => {
-    const data = await fetch('/api/products/money_earned', {
-			headers: {
-				'bearer-token': supabase.auth.session()?.access_token as string
-			}
-		})
-		const res = await data.json()
-    cards[2].amount = '$' + res
-		setMoney('$' + res)
+    if(!running) {
+      const data = await fetch('/api/products/money_earned', {
+        headers: {
+          'bearer-token': supabase.auth.session()?.access_token as string
+        }
+      })
+      const res = await data.json()
+      cards[2].amount = '$' + res
+      setMoney('$' + res)
+    }
   }
 
   const totalProductSold = async () => {
-    const data = await fetch('/api/products/product_sold', {
-			headers: {
-				'bearer-token': supabase.auth.session()?.access_token as string
-			}
-		})
-		const res = await data.json()
-    cards[1].amount = res
-		setSold(res)
+    if(!running) {
+      const data = await fetch('/api/products/product_sold', {
+        headers: {
+          'bearer-token': supabase.auth.session()?.access_token as string
+        }
+      })
+      const res = await data.json()
+      cards[1].amount = res
+      setSold(res)
+    }
   }
 
   const totalVisits = async () => {
-    const data = await fetch('/api/pages/visits', {
-			headers: {
-				'bearer-token': supabase.auth.session()?.access_token as string
-			}
-		})
-		const res = await data.json()
-    cards[0].amount = res
-		setVisits(res)
+    if(!running) {
+      const data = await fetch('/api/pages/visits', {
+        headers: {
+          'bearer-token': supabase.auth.session()?.access_token as string
+        }
+      })
+      const res = await data.json()
+      cards[0].amount = res
+      setVisits(res)
+    }
   }
 
   const totalPages = async () => {
-    const data = await fetch('/api/pages/number_of_pages', {
-			headers: {
-				'bearer-token': supabase.auth.session()?.access_token as string
-			}
-		})
-		const res = await data.json()
-    cards[3].amount = res
-		setVisits(res)
+    if(!running) {
+      const data = await fetch('/api/pages/number_of_pages', {
+        headers: {
+          'bearer-token': supabase.auth.session()?.access_token as string
+        }
+      })
+      const res = await data.json()
+      cards[3].amount = res
+      setVisits(res)
+    }
   }
 
   useEffect(() => {
@@ -436,15 +468,15 @@ export default function Dashboard() {
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }: any) => (
-                          <a
-                            href="#"
+                          <button
+                            onClick={() => supabase.auth.signOut()}
                             className={classNames(
                               active ? 'bg-gray-100' : '',
                               'block px-4 py-2 text-sm text-gray-700'
                             )}
                           >
                             Logout
-                          </a>
+                          </button>
                         )}
                       </Menu.Item>
                     </Menu.Items>
