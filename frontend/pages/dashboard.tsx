@@ -137,7 +137,7 @@ export default function Dashboard() {
   useEffect(() => console.log(running, 'running'), [running])
 
   const getMoneyEarned = async () => {
-    if(!running) {
+    if(running) {
       const data = await fetch('/api/products/money_earned', {
         headers: {
           'bearer-token': supabase.auth.session()?.access_token as string
@@ -150,7 +150,7 @@ export default function Dashboard() {
   }
 
   const totalProductSold = async () => {
-    if(!running) {
+    if(running) {
       const data = await fetch('/api/products/product_sold', {
         headers: {
           'bearer-token': supabase.auth.session()?.access_token as string
@@ -163,7 +163,7 @@ export default function Dashboard() {
   }
 
   const totalVisits = async () => {
-    if(!running) {
+    if(running) {
       const data = await fetch('/api/pages/visits', {
         headers: {
           'bearer-token': supabase.auth.session()?.access_token as string
@@ -176,7 +176,7 @@ export default function Dashboard() {
   }
 
   const totalPages = async () => {
-    if(!running) {
+    if(running) {
       const data = await fetch('/api/pages/number_of_pages', {
         headers: {
           'bearer-token': supabase.auth.session()?.access_token as string
