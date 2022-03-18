@@ -241,6 +241,7 @@ const Pages = ({ cards }: Props) => {
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-gray-200 bg-white">
+						{(!pages || pages.length <= 0) && <div>No Pages Available</div>}
 						{pages && pages.length > 0 && pages.map((page) => (
 							<tr key={page.id} className="bg-white">
 								<td className="w-full max-w-0 whitespace-nowrap px-6 py-4 text-sm text-gray-900">

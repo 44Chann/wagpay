@@ -9,7 +9,7 @@ import connect_product_to_pages from '../utils/connect_product_to_pages'
 async function create(req: NextApiRequest, res: NextApiResponse<any>) {
 	
 	if(req.method === 'POST') {
-		const submissionData = req.body
+		const submissionData = JSON.parse(req.body)
 		console.log(submissionData)
 		const { data: sub_data, error } = await supabase.from('submission')
 			.update({
@@ -27,7 +27,7 @@ async function create(req: NextApiRequest, res: NextApiResponse<any>) {
 
 		if(submissionData.transaction_hash) {
 			sub_data[0].products.map((value: any) => {
-				fetch('https://wagpay.vercel.app/api/products/increment_sold', {
+				fetch('http://localhost:3000/api/products/increment_sold', {
 					method: 'POST',
 					body: JSON.stringify({
 						product_id: value

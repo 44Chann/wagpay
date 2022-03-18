@@ -201,7 +201,8 @@ const Products = ({ cards }: Props) => {
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-gray-200 bg-white">
-						{products.map((product) => (
+						{(!products || products.length <= 0) && <div>No Products Available</div>}
+						{products && products.length > 0 && products.map((product) => (
 						<tr key={product.id} className="bg-white">
 							<td className="w-full max-w-0 whitespace-nowrap px-6 py-4 text-sm text-gray-900">
 								<div className="flex">

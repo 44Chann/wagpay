@@ -25,7 +25,7 @@ async function get(req: NextApiRequest, res: NextApiResponse<Product[] | string>
 			user_id: userData[0].id
 		})
 		
-		if(!data || error || data?.length === 0) {
+		if(error) {
 			console.log(error)
 			res.status(400).send('Page was not created ' + JSON.stringify(error))
 			return

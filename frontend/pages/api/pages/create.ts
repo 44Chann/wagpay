@@ -57,7 +57,7 @@ async function create(req: NextApiRequest, res: NextApiResponse<Page | string>) 
 			return
 		}
 		
-		let product_ids = await createProducts(products)
+		let product_ids = await createProducts(products, userData[0].id)
 		let connect_product = await connect_product_to_pages(product_ids, data[0].id)
 
 		res.status(201).send(page as Page)

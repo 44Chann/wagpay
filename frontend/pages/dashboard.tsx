@@ -46,7 +46,7 @@ const secondaryNavigation = [
 ]
 
 const cards = [
-  { name: 'Total visits', href: '#', icon: TrendingUpIcon, amount: '320234' },
+  { name: 'Total visits', href: '#', icon: TrendingUpIcon, amount: '0' },
   {
     name: 'Products Sold',
     href: '#',
@@ -54,7 +54,7 @@ const cards = [
     amount: '0',
   },
   { name: 'Earned', href: '#', icon: CashIcon, amount: '0' },
-  { name: 'Pages', href: '#', icon: CollectionIcon, amount: '2' },
+  { name: 'Pages', href: '#', icon: CollectionIcon, amount: '0' },
   // More items...
 ]
 

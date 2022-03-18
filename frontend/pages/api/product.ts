@@ -6,4 +6,5 @@ export interface Product {
 	description: string
 	links: string[]
 	sold: number
+	user: number
 }
