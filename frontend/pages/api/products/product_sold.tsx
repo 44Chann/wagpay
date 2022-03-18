@@ -6,7 +6,7 @@ import { Product } from '../product'
 import createProducts from '../utils/createProducts'
 import connect_product_to_pages from '../utils/connect_product_to_pages'
 
-async function get(req: NextApiRequest, res: NextApiResponse<Product[] | string>) {
+async function get(req: NextApiRequest, res: NextApiResponse<any[] | string | null>) {
 	let jwt = await verifyUser(req, res)
 	let { user, error } = await supabase.auth.api.getUser(req.headers['bearer-token'] as string)
 	const { data: userData, error: userError } = await supabase
