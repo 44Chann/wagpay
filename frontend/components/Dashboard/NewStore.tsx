@@ -55,9 +55,12 @@ const NewStore = (props: Props) => {
 	const [sol, setSOL] = useState<string>('')
 	
 	const changeField = async (field: _fields, value: string, idx: number) => {
-		setFields((previousState) => {
+		console.log(field, value, idx, fields.length)
+		await setFields((previousState) => {
 			let field_values = [...fields]
+			console.log(field_values, fields.length)
 			field_values[idx][field] = value
+			console.log(field_values, fields.length)
 			return field_values
 		})
 	}
@@ -181,7 +184,7 @@ const NewStore = (props: Props) => {
 					</div>
 				})}
 				<button
-					onClick={() => setFields(() => [...fields, empty_field])}
+					onClick={() => {console.log(fields, empty_field);setFields(() => [...fields, {name:"", type:"", value:""}])}}
 					type="button"
 					className="flex justify-center space-x-2 items-center rounded-md border border-transparent bg-cyan-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
 				>
@@ -203,7 +206,13 @@ const NewStore = (props: Props) => {
 					</div>
 				})}
 				<button
-					onClick={() => setProducts(() => [...products, empty_product])}
+					onClick={() => setProducts(() => [...products, {
+						discounted_price: 0,
+						price: 0,
+						name: '',
+						description: '',
+						links: []
+					}])}
 					type="button"
 					className="flex justify-center space-x-2 items-center rounded-md border border-transparent bg-cyan-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
 				>
