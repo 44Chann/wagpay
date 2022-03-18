@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { PlusIcon, XIcon } from '@heroicons/react/solid'
-import { useNotifications } from '@mantine/notifications';
 import { supabase } from "../../supabase";
 
 type supported_currencies = 'Ethereum' | 'Solana'
@@ -43,8 +42,6 @@ type _products = 'discounted_price' | 'price' | 'name' | 'description' | 'links'
 const supported_currencies = ['SOL', 'ETH']
 
 const NewStore = (props: Props) => {
-	const notifications = useNotifications()
-
 	const [products, setProducts] = useState<Product[]>([])
 	const [fields, setFields] = useState<Field[]>([])
 
@@ -102,21 +99,6 @@ const NewStore = (props: Props) => {
 	}
 	
 	const submit = async () => {
-		const id = notifications.showNotification({
-			id: 'hello-there',
-			disallowClose: true,
-			onClose: () => console.log('unmounted'),
-			onOpen: () => console.log('mounted'),
-			autoClose: false,
-			title: "Create your Store",
-			message: 'Be ready to sell products & get into crypto',
-			color: 'red',
-			icon: <XIcon />,
-			className: 'my-notification-class',
-			style: { backgroundColor: 'red' },
-			loading: true,
-		});
-
 		const data = await fetch('/api/pages/create', {
 			method: 'POST',
 			body: JSON.stringify({
@@ -137,22 +119,10 @@ const NewStore = (props: Props) => {
 		})
 
 		const res = await data.json()
-
-		setTimeout(() => {
-			notifications.updateNotification(id, {
-			  id,
-			  color: 'teal',
-			  title: 'Page Created Successfully',
-			  message:
-				'Notification will close in 2 seconds, you can close this notification now',
-			  icon: <XIcon />,
-			  autoClose: 2000,
-			});
-		}, 3000);
 	}
 
 	return (
-		<div className={(props.isOpen ? "" : "hidden ") + "absolute top-0 right-0 w-1/3 h-screen overflow-y-scroll bg-cyan-500 px-16 pt-10 text-white space-y-5"}>
+		<div className={(props.isOpen ? "" : "hidden ") + "z-50 absolute top-0 right-0 w-1/3 h-screen overflow-y-scroll bg-cyan-500 px-16 pt-10 text-white space-y-5"}>
 			<h1 className="text-3xl font-black">Create a New Store</h1>
 			<div className="flex flex-col space-y-2">
 				<label htmlFor="Store">Store Name</label>

@@ -6,35 +6,36 @@ import { Product } from '../product'
 import createProducts from '../utils/createProducts'
 import connect_product_to_pages from '../utils/connect_product_to_pages'
 
-async function get(req: NextApiRequest, res: NextApiResponse<Product[] | string>) {
+async function create(req: NextApiRequest, res: NextApiResponse<any | string>) {
 	let jwt = await verifyUser(req, res)
 	let { user, error } = await supabase.auth.api.getUser(req.headers['bearer-token'] as string)
-	const { data: userData, error: userError } = await supabase
-		.from('User')
-		.select('*')
-		.eq('email', user?.email)
 	
-	if(!user || !userData || userError || userData?.length === 0) {
-		console.log(error)
-		res.status(400).send('Page was not created ' + JSON.stringify(error))
-		return
-	}
-
-	if(req.method === 'GET') {			
-		const { data, error } = await supabase.rpc('total_money_earned', {
-			user_id: userData[0].id
-		})
+	if(req.method === 'GET') {
+		console.log(user)
+		const { data, error } = await supabase
+			.from('submission')
+			// .select('product_id!inner(*),submission_id!inner(*),page_id!inner(*)')
+			.select(`
+				*,
+				page_id (
+					title,
+					slug,
+					user (
+						email
+					)
+				)
+			`)
+			.eq('page_id.user.email', user?.email)
+			.limit(5)
+			.order('created_at', { ascending: false })
 		
-		console.log(data, userData[0].id, "dasdsa")
-		if(!data || error) {
-			console.log(error)
+		if(!data || error || data?.length === 0) {
 			res.status(400).send('Page was not created ' + JSON.stringify(error))
 			return
 		}
 
-		console.log(data)
 		res.status(201).send(data)
 	}
 }
 
-export default get
+export default create

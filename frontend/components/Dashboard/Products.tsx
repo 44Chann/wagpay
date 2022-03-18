@@ -39,13 +39,12 @@ interface Props {
 }
 
 interface Data {
-	product_id: ProductInterface
-	page_id: any
+	id: number
 	sold: number
 }
 
 const Products = ({ cards }: Props) => {
-	const [products, setProducts] = useState<Data[]>([])
+	const [products, setProducts] = useState<any[]>([])
 	
 	const fetchProducts = async () => {
 		const data = await fetch('/api/products/userproducts', {
@@ -123,7 +122,7 @@ const Products = ({ cards }: Props) => {
 				className="mt-2 divide-y divide-gray-200 overflow-hidden shadow sm:hidden"
 			>
 				{products.map((product) => (
-				<li key={product.product_id.id}>
+				<li key={product.id}>
 					<a
 						className="block bg-white px-4 py-4 hover:bg-gray-50"
 					>
@@ -135,11 +134,11 @@ const Products = ({ cards }: Props) => {
 						/>
 						<span className="flex flex-col truncate text-sm text-gray-500">
 							<span className="truncate">
-								{product.product_id.name}
+								{product.name}
 							</span>
 							<span>
 							<span className="font-medium text-gray-900">
-								{product.product_id.discounted_price}
+								{product.discounted_price}
 							</span>{' '}
 							$
 							</span>
@@ -191,9 +190,6 @@ const Products = ({ cards }: Props) => {
 							Description
 						</th>
 						<th className="bg-gray-50 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-							Page
-						</th>
-						<th className="bg-gray-50 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
 							Discounted Amount
 						</th>
 						<th className="hidden bg-gray-50 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 md:block">
@@ -206,7 +202,7 @@ const Products = ({ cards }: Props) => {
 					</thead>
 					<tbody className="divide-y divide-gray-200 bg-white">
 						{products.map((product) => (
-						<tr key={product.product_id.id} className="bg-white">
+						<tr key={product.id} className="bg-white">
 							<td className="w-full max-w-0 whitespace-nowrap px-6 py-4 text-sm text-gray-900">
 								<div className="flex">
 									<a
@@ -217,32 +213,25 @@ const Products = ({ cards }: Props) => {
 										aria-hidden="true"
 									/> */}
 									<p className="truncate text-gray-500 group-hover:text-gray-900">
-										{product.product_id.name}
+										{product.name}
 									</p>
 									</a>
 								</div>
 							</td>
 							<td className='w-96 truncate whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500'>
 								<span className='w-96 truncate inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize'>
-									{product.product_id.description}
+									{product.description}
 								</span>...
 							</td>
 							<td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
-								<Link href={`/${product.page_id.slug}`} >
-									<a className="font-medium text-gray-900">
-										{product.page_id.title}{' '}
-									</a>
-								</Link>
-							</td>
-							<td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
 								<span className="font-medium text-gray-900">
-									{product.product_id.discounted_price}{' '}
+									{product.discounted_price}{' '}
 								</span>
 								$
 							</td>
 							<td className="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-500 md:block">
 								<span className="font-medium text-gray-900">
-									{product.product_id.price}{' '}
+									{product.price}{' '}
 								</span>
 								$
 							</td>

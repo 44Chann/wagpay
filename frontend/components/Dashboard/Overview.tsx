@@ -84,7 +84,7 @@ const Overview = ({ cards }: Props) => {
 	const [transactions, setTransactions] = useState<any[]>([])
 	
 	const fetchTransactions = async () => {
-		const res = await fetch('/api/submissions/get', {
+		const res = await fetch('/api/submissions/limit', {
 			headers: {
 				'bearer-token': supabase.auth.session()?.access_token as string
 			}
@@ -97,7 +97,7 @@ const Overview = ({ cards }: Props) => {
 			if(!data[j].total_prices) data[j].total_prices = 0
 			var total_price = 0;
 			for(let i=0;i<products.length;i++) {
-				const ress = await fetch(`https://wagpay.vercel.app/api/products/${products[i]}`)
+				const ress = await fetch(`http://localhost:3000/api/products/${products[i]}`)
 				const res = await ress.json()
 
 				data[j].products[i] = res
@@ -310,14 +310,20 @@ const Overview = ({ cards }: Props) => {
 								)}
 							>
 								{transaction.eth_address && 
-									<a href={`https://etherscan.io/tx/${transaction.transaction_hash}`} className='flex space-x-3'>
-										<span>See Transaction on</span> <img src="https://etherscan.io/images/brandassets/etherscan-logo.png" className='w-14' alt="" />
-									</a>
+									<>
+										{transaction.transaction_hash === '' ? <span>❌</span> : <span>✅</span>}	
+										<a href={`https://etherscan.io/tx/${transaction.transaction_hash}`} className='flex space-x-3'>
+											<span>See Transaction on</span> <img src="https://etherscan.io/images/brandassets/etherscan-logo.png" className='w-14' alt="" />
+										</a>
+									</>
 								}
 								{transaction.sol_address && 
-									<a href={`https://solscan.io/tx/${transaction.transaction_hash}`} className='flex space-x-3'>
-										<span>See Transaction on</span> <img src="https://solscan.io/static/media/solana-solana-scan-blue.5ffb9996.svg" className='w-14' alt="" />
-									</a>
+									<>
+										{transaction.transaction_hash === '' ? <span>❌</span> : <span>✅</span>}	
+										<a href={`https://solscan.io/tx/${transaction.transaction_hash}`} className='flex space-x-3'>
+											<span>See Transaction on</span> <img src="https://solscan.io/static/media/solana-solana-scan-blue.5ffb9996.svg" className='w-14' alt="" />
+										</a>
+									</>
 								}
 							</span>
 							</td>

@@ -22,11 +22,11 @@ async function get(req: NextApiRequest, res: NextApiResponse<Product[] | string>
 
 	if(req.method === 'GET') {			
 		const { data, error } = await supabase
-			.from('product_page')
+			.from('product')
 			.select(`
-				product_id!inner(*),page_id!inner(*),sold
+				*
 			`)
-			.eq('page_id.user', userData[0].id)
+			.eq('user', userData[0].id)
 
 		console.log(user.email, userData[0].id)
 		

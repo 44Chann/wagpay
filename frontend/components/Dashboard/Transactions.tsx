@@ -22,6 +22,7 @@ import {
 import { useEffect, useState } from 'react'
 import { supabase } from '../../supabase'
 import Link from 'next/link'
+import TransactionModal from './TransactionModal'
 
 const statusStyles = {
 	success: 'bg-green-100 text-green-800',
@@ -39,7 +40,19 @@ interface Props {
 
 const Transactions = ({ cards }: Props) => {
 	const [transactions, setTransactions] = useState<any[]>([])
+	const [selectedTransaction, setSelectedTransaction] = useState<any>({})
 	
+	let [isOpen, setIsOpen] = useState(false)
+
+	function closeModal() {
+	  setIsOpen(false)
+	}
+  
+	function openModal(transaction: any) {
+		setSelectedTransaction(transaction)
+	  	setIsOpen(true)
+	}  
+
 	const fetchTransactions = async () => {
 		const res = await fetch('/api/submissions/get', {
 			headers: {
@@ -47,6 +60,7 @@ const Transactions = ({ cards }: Props) => {
 			}
 		})
 		const data = await res.json()
+		// setTransactions(data)
 		
 		for(let j=0;j<data.length;j++) {
 			const value = data[j]
@@ -54,7 +68,7 @@ const Transactions = ({ cards }: Props) => {
 			if(!data[j].total_prices) data[j].total_prices = 0
 			var total_price = 0;
 			for(let i=0;i<products.length;i++) {
-				const ress = await fetch(`https://wagpay.vercel.app/api/products/${products[i]}`)
+				const ress = await fetch(`http://localhost:3000/api/products/${products[i]}`)
 				const res = await ress.json()
 
 				data[j].products[i] = res
@@ -70,7 +84,7 @@ const Transactions = ({ cards }: Props) => {
 		fetchTransactions()
 	}, [])
 
-	useEffect(() => console.log(transactions), [transactions])
+	// useEffect(() => console.log(transactions), [transactions])
 	
 	return (
 		<div className="mt-8">
@@ -220,7 +234,7 @@ const Transactions = ({ cards }: Props) => {
 							<td className="w-full max-w-0 whitespace-nowrap px-6 py-4 text-sm text-gray-900">
 							<div className="flex">
 								<a
-									// href={transaction.href}
+									onClick={() => openModal(transaction)}
 									className="group inline-flex space-x-2 truncate text-sm"
 								>
 									<p className="truncate text-gray-500 group-hover:text-gray-900">
@@ -236,7 +250,6 @@ const Transactions = ({ cards }: Props) => {
 							</td>
 							<td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
 								<span className="font-medium text-gray-900">
-									{console.log(Object.keys(transaction))}
 									${transaction.total_prices}{' '}
 								</span>
 								USD
@@ -250,14 +263,20 @@ const Transactions = ({ cards }: Props) => {
 								)}
 							>
 								{transaction.eth_address && 
-									<a href={`https://etherscan.io/tx/${transaction.transaction_hash}`} className='flex space-x-3'>
-										<span>See Transaction on</span> <img src="https://etherscan.io/images/brandassets/etherscan-logo.png" className='w-14' alt="" />
-									</a>
+									<>
+										{!transaction.transaction_hash ? <span>❌</span> : <span>✅</span>}	
+										<a href={`https://etherscan.io/tx/${transaction.transaction_hash}`} className='flex space-x-3'>
+											<span>See Transaction on</span> <img src="https://etherscan.io/images/brandassets/etherscan-logo.png" className='w-14' alt="" />
+										</a>
+									</>	
 								}
 								{transaction.sol_address && 
-									<a href={`https://solscan.io/tx/${transaction.transaction_hash}`} className='flex space-x-3'>
-										<span>See Transaction on</span> <img src="https://solscan.io/static/media/solana-solana-scan-blue.5ffb9996.svg" className='w-14' alt="" />
-									</a>
+									<>
+										{!transaction.transaction_hash ? <span>❌</span> : <span>✅</span>}	
+										<a href={`https://solscan.io/tx/${transaction.transaction_hash}`} className='flex space-x-3'>
+											<span>See Transaction on</span> <img src="https://solscan.io/static/media/solana-solana-scan-blue.5ffb9996.svg" className='w-14' alt="" />
+										</a>
+									</>
 								}
 							</span>
 							</td>
@@ -296,6 +315,7 @@ const Transactions = ({ cards }: Props) => {
 				</div>
 			</div>
 			</div>
+			<TransactionModal isOpen={isOpen} closeModal={closeModal} openModal={openModal} transaction={selectedTransaction} />
 		</div>
 	)
 }

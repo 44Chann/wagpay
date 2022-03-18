@@ -115,23 +115,24 @@ export default function Dashboard() {
 	const [visits, setVisits] = useState(0)
 	const [money, setMoney] = useState('$0')
 	const [sold, setSold] = useState(0)
-  const [running, setRunning] = useState(true)
+  const [running, setRunning] = useState(false)
 
   useLayoutEffect(() => {
     try {
       const user = supabase.auth.user()
       console.log('user1')
       if(!user) {
-        setRunning(false)
         console.log('user')
         push('/auth')
+        return
       }
       console.log('user2')
     } catch (e) {
-      setRunning(false)
       push('/auth')
       console.log('not logged in')
+      return
     }
+    setRunning(true)
   }, [])
 
   useEffect(() => console.log(running, 'running'), [running])
@@ -171,6 +172,7 @@ export default function Dashboard() {
       })
       const res = await data.json()
       cards[0].amount = res
+      console.log(cards[0])
       setVisits(res)
     }
   }
@@ -189,11 +191,13 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    getMoneyEarned()
-    totalProductSold()
-    totalVisits()
-    totalPages()
-  }, [])
+    if(running) {
+      getMoneyEarned()
+      totalProductSold()
+      totalVisits()
+      totalPages()
+    }
+  }, [running])
 
   const changeTab = (nextTab: string, nextId: number) => {
     const index = navigation.map((e) => {return e.comp_name}).indexOf(currentTab)
@@ -387,29 +391,7 @@ export default function Dashboard() {
               <MenuAlt1Icon className="h-6 w-6" aria-hidden="true" />
             </button>
             {/* Search bar */}
-            <div className="flex flex-1 justify-between px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
-              <div className="flex flex-1">
-                <form className="flex w-full md:ml-0" action="#" method="GET">
-                  <label htmlFor="search-field" className="sr-only">
-                    Search
-                  </label>
-                  <div className="relative w-full text-gray-400 focus-within:text-gray-600">
-                    <div
-                      className="pointer-events-none absolute inset-y-0 left-0 flex items-center"
-                      aria-hidden="true"
-                    >
-                      <SearchIcon className="h-5 w-5" aria-hidden="true" />
-                    </div>
-                    <input
-                      id="search-field"
-                      name="search-field"
-                      className="block h-full w-full border-transparent py-2 pl-8 pr-3 text-gray-900 placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-                      placeholder="Search transactions"
-                      type="search"
-                    />
-                  </div>
-                </form>
-              </div>
+            <div className="flex flex-1 justify-end px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
               <div className="ml-4 flex items-center md:ml-6">
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">

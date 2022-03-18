@@ -8,7 +8,6 @@ import BigNumber from 'bignumber.js';
 import { ethers } from "ethers";
 import { ExternalProvider } from "@ethersproject/providers";
 import * as splToken from '@solana/spl-token/src'
-import { useNotifications } from '@mantine/notifications';
 
 type supported_currencies = 'Ethereum' | 'Solana'
 
@@ -46,7 +45,6 @@ const CrossIcon = () => {
 }
 
 const PaymentCard = ({ fields, createTransaction, updateTransaction, setIsModalOpen, merchantETH, merchantSOL, setQrCode, totalPrice }: Props) => {
-	const notifications = useNotifications()
 	const [{ data: connectData, error: connectError }, connect] = useConnect()
 	const [{ data: accountData }, disconnect] = useAccount({
 	  fetchEns: true,
@@ -198,23 +196,8 @@ const PaymentCard = ({ fields, createTransaction, updateTransaction, setIsModalO
 			return
 		}
 
-		if(option.toLowerCase() === 'solana') {			
-			const id = notifications.showNotification({
-				id: 'hello-there',
-				disallowClose: true,
-				onClose: () => console.log('unmounted'),
-				onOpen: () => console.log('mounted'),
-				autoClose: false,
-				title: "Transaction Creating",
-				message: 'Your Solana Transaction is creating',
-				color: 'red',
-				icon: <CrossIcon />,
-				className: 'my-notification-class',
-				style: { backgroundColor: 'red' },
-				loading: true,
-			});
+		if(option.toLowerCase() === 'solana') {
 			try {
-				console.log(id)
 				await connectSOL()
 				const solProvider = window.solana
 				const solConnection = new Connection(clusterApiUrl('mainnet-beta'))
@@ -241,50 +224,14 @@ const PaymentCard = ({ fields, createTransaction, updateTransaction, setIsModalO
 
 				let signature = await solConnection.sendRawTransaction(signed.serialize());
 				await solConnection.confirmTransaction(signature);
-				setTimeout(() => {
-					notifications.updateNotification(id, {
-					  id,
-					  color: 'teal',
-					  title: 'Transaction Successful',
-					  message:
-						'Notification will close in 2 seconds, you can close this notification now',
-					  icon: <CrossIcon />,
-					  autoClose: 2000,
-					});
-				}, 3000);
 
 				updateTransaction(txId, true, signature)
 
 				return signature
 			} catch (e) {
 				updateTransaction(txId, false, '')
-				setTimeout(() => {
-					notifications.updateNotification(id, {
-					  id,
-					  color: 'red',
-					  title: 'Transaction UnSuccessful',
-					  message:
-						'Notification will close in 2 seconds, you can close this notification now',
-					  icon: <CrossIcon />,
-					  autoClose: 2000,
-					});
-				}, 3000);
 			}
 		} else if(option.toLowerCase() === 'ethereum' || option.toLowerCase() === 'usdc (ethereum)') {
-			const id = notifications.showNotification({
-				id: 'hello-there',
-				disallowClose: true,
-				onClose: () => console.log('unmounted'),
-				onOpen: () => console.log('mounted'),
-				autoClose: false,
-				title: "Transaction Creating",
-				message: 'Your Ethereum Transaction is creating',
-				color: 'red',
-				icon: <CrossIcon />,
-				className: 'my-notification-class',
-				style: { backgroundColor: 'red' },
-				loading: true,
-			});
 			const account = await connectData.connectors.find(connector => connector.name.toLowerCase() === wallet.toLowerCase())?.connect()
 			setETH(account?.account as string)
 			const ethProvider = new ethers.providers.Web3Provider(window.ethereum as ExternalProvider);
@@ -296,35 +243,12 @@ const PaymentCard = ({ fields, createTransaction, updateTransaction, setIsModalO
 				})
 				
 				var txId = await createTransaction(email, fields, account?.account, '')
-				
-				setTimeout(() => {
-					notifications.updateNotification(id, {
-					  id,
-					  color: 'green',
-					  title: 'Transaction Successful',
-					  message:
-						'Notification will close in 2 seconds, you can close this notification now',
-					  icon: <CrossIcon />,
-					  autoClose: 2000,
-					});
-				}, 3000);
 				console.log(tx)
 				updateTransaction(txId, true, tx.hash)
 				return tx
 			} catch (e) {
 				let txId = await createTransaction(email, fields, account?.account, '')
 				updateTransaction(txId, false, '')
-				setTimeout(() => {
-					notifications.updateNotification(id, {
-					  id,
-					  color: 'red',
-					  title: 'Transaction UnSuccessful',
-					  message:
-						'Notification will clo`se in 2 seconds, you can close this notification now',
-					  icon: <CrossIcon />,
-					  autoClose: 2000,
-					});
-				}, 3000);
 				console.log("WagPay: Can't send transaction!", e)
 			}
 		}

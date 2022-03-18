@@ -1,6 +1,7 @@
 import { supabase } from "../supabase"
 import { useState } from "react"
 import { useRouter } from 'next/router'
+import toast from "react-hot-toast"
 
 const Auth: React.FC = () => {
 	const [email, setEmail] = useState('')
@@ -10,27 +11,25 @@ const Auth: React.FC = () => {
 	const getOrCreateUser = async (email: string) => {
 		let { data, error } = await supabase.from('User').select('*').eq('email', email)
 
-		console.log(error)
 		if(error || data?.length === 0) {
-			let { data, error } = await supabase.from('User').insert([{ username: email, email: email }])
-			
-			if(error || data?.length === 0) {
-				console.log(error)
-				return false
-			}
+			toast('Claim a username first')	
+			push('/claim')
+			return false
 		}
-
 		return true
 	}
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
 		console.log(email)
-		const { user, session, error } = await supabase.auth.signIn({ email })
-		if (!error) {
-			console.log(email)
-			getOrCreateUser(email)
-			// push('/')
+		let alreadyUser = await getOrCreateUser(email)
+		if(alreadyUser) {
+			const promise = supabase.auth.signIn({ email })
+			toast.promise(promise, {
+				loading: 'Sending Email',
+				success: 'Successfully send email',
+				error: "Can't send email"
+			})
 		}
 	}
 
