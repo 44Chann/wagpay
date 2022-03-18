@@ -8,6 +8,7 @@ import BigNumber from 'bignumber.js';
 import { ethers } from "ethers";
 import { ExternalProvider } from "@ethersproject/providers";
 import * as splToken from '@solana/spl-token/src'
+import toast from 'react-hot-toast'
 
 type supported_currencies = 'Ethereum' | 'Solana'
 
@@ -197,11 +198,16 @@ const PaymentCard = ({ fields, createTransaction, updateTransaction, setIsModalO
 		}
 
 		if(option.toLowerCase() === 'solana') {
+			var toastIdTransact
 			try {
+				const toastIdConnect = toast.loading('Connecting Solana Wallet')
 				await connectSOL()
 				const solProvider = window.solana
 				const solConnection = new Connection(clusterApiUrl('mainnet-beta'))
+				toast.dismiss(toastIdConnect)
+				toast.success('Successfully Connected Phantom')
 				
+				toastIdTransact = toast.loading('Creating Solana Transaction')
 				var transaction = new Transaction().add(
 					SystemProgram.transfer({
 						fromPubkey: solProvider.publicKey,
@@ -225,17 +231,29 @@ const PaymentCard = ({ fields, createTransaction, updateTransaction, setIsModalO
 				let signature = await solConnection.sendRawTransaction(signed.serialize());
 				await solConnection.confirmTransaction(signature);
 
-				updateTransaction(txId, true, signature)
+				await updateTransaction(txId, true, signature)
+				toast.dismiss(toastIdTransact)
+				toast.success('Successfully Sent Transaction')
 
 				return signature
 			} catch (e) {
-				updateTransaction(txId, false, '')
+				await updateTransaction(txId, false, '')
+				toast.dismiss(toastIdTransact)
+				toast.error('Transaction not successful')
 			}
 		} else if(option.toLowerCase() === 'ethereum' || option.toLowerCase() === 'usdc (ethereum)') {
+			var toastTransact, toastConnect
+			
+			toastConnect = toast.loading('Connecting Ethereum Wallet')
 			const account = await connectData.connectors.find(connector => connector.name.toLowerCase() === wallet.toLowerCase())?.connect()
 			setETH(account?.account as string)
 			const ethProvider = new ethers.providers.Web3Provider(window.ethereum as ExternalProvider);
 			const signer = ethProvider.getSigner()
+			toast.dismiss(toastConnect)
+			toast.success('Successfully Connected to ' + wallet)
+
+			toastTransact = toast.loading('Creating Ethereum Transaction')
+
 			try {
 				const tx = await signer.sendTransaction({
 					to: merchantETH,
@@ -244,11 +262,15 @@ const PaymentCard = ({ fields, createTransaction, updateTransaction, setIsModalO
 				
 				var txId = await createTransaction(email, fields, account?.account, '')
 				console.log(tx)
-				updateTransaction(txId, true, tx.hash)
+				await updateTransaction(txId, true, tx.hash)
+				toast.dismiss(toastTransact)
+				toast.success('Successfully sent Transaction')
 				return tx
 			} catch (e) {
 				let txId = await createTransaction(email, fields, account?.account, '')
-				updateTransaction(txId, false, '')
+				await updateTransaction(txId, false, '')
+				toast.dismiss(toastTransact)
+				toast.success('Transaction not successful')
 				console.log("WagPay: Can't send transaction!", e)
 			}
 		}

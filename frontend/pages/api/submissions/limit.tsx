@@ -35,15 +35,9 @@ async function create(req: NextApiRequest, res: NextApiResponse<any | string>) {
 			.from('submission')
 			// .select('product_id!inner(*),submission_id!inner(*),page_id!inner(*)')
 			.select(`
-			*,
-				page_id (
-					id,
-					title,
-					slug,
-					user
-					)
+				*
 			`)
-			.in('page_id.id', pageData.map(page => page.id))
+			.in('page_id', pageData.map(page => page.id))
 			.limit(5)
 			.order('created_at', { ascending: false })
 			

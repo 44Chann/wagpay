@@ -103,6 +103,11 @@ const Overview = ({ cards }: Props) => {
 				data[j].products[i] = res
 				total_price += res.discounted_price
 			}
+
+			const ress = await fetch(`http://localhost:3000/api/pages/id?id=${data[j].page_id}`)
+			const res = await ress.json()
+			data[j].page_id = res
+
 			data[j].total_prices = total_price
 		}
 		setTransactions(data)
@@ -292,9 +297,9 @@ const Overview = ({ cards }: Props) => {
 							</div>
 							</td>
 							<td className="whitespace-nowrap px-6 py-4 text-center text-sm text-gray-500">
-								{/* <Link href={`${transaction.page_id.slug}`}> */}
-									{/* {transaction.page_id.title} */}
-								{/* </Link> */}
+								<Link href={`${transaction.page_id.slug}`}>
+									{transaction.page_id.title}
+								</Link>
 							</td>
 							<td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
 								<span className="font-medium text-gray-900">

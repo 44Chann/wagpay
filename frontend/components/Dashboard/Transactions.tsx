@@ -74,6 +74,11 @@ const Transactions = ({ cards }: Props) => {
 				data[j].products[i] = res
 				total_price += res.discounted_price
 			}
+
+			const ress = await fetch(`http://localhost:3000/api/pages/id?id=${data[j].page_id}`)
+			const res = await ress.json()
+			data[j].page_id = res
+
 			data[j].total_prices = total_price
 		}
 		setTransactions(data)

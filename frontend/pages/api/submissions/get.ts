@@ -25,6 +25,8 @@ async function create(req: NextApiRequest, res: NextApiResponse<any | string>) {
 	if(req.method === 'GET') {
 		const { data: pageData, error: pageError } = await supabase.from('pages').select('id').eq('user', userData[0].id)
 		
+		console.log(pageData, userData[0].id)
+
 		if(!pageData || pageError || pageData?.length === 0) {
 			res.status(400).send('Page was not created ' + JSON.stringify(pageError))
 			return
@@ -36,14 +38,9 @@ async function create(req: NextApiRequest, res: NextApiResponse<any | string>) {
 			.from('submission')
 			// .select('product_id!inner(*),submission_id!inner(*),page_id!inner(*)')
 			.select(`
-				*,
-				page_id (
-					title,
-					slug,
-					user
-				)
+				*
 			`)
-			.in('page_id.id', pageData.map(page => page.id))
+			.in('page_id', pageData.map(page => page.id))
 		
 		if(!data || error || data?.length === 0) {
 			res.status(400).send('Page was not created ' + JSON.stringify(error))
