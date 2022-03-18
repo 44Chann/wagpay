@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { PlusIcon, XIcon } from '@heroicons/react/solid'
 import { supabase } from "../../supabase";
+import toast from "react-hot-toast";
 
 type supported_currencies = 'Ethereum' | 'Solana'
 
@@ -102,6 +103,7 @@ const NewStore = (props: Props) => {
 	}
 	
 	const submit = async () => {
+		const toastId = toast.loading('Creating Store')
 		const data = await fetch('/api/pages/create', {
 			method: 'POST',
 			body: JSON.stringify({
@@ -122,6 +124,9 @@ const NewStore = (props: Props) => {
 		})
 
 		const res = await data.json()
+
+		toast.dismiss(toastId)
+		toast.success('Successfully Created Store')
 	}
 
 	return (

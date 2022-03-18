@@ -193,7 +193,7 @@ const PaymentCard = ({ fields, createTransaction, updateTransaction, setIsModalO
 
 	const pay = async () => {
 		if(totalPrice <= 0) {
-			alert('Select a Product')
+			toast.error('Select a Product')
 			return
 		}
 
@@ -253,11 +253,11 @@ const PaymentCard = ({ fields, createTransaction, updateTransaction, setIsModalO
 			toast.success('Successfully Connected to ' + wallet)
 
 			toastTransact = toast.loading('Creating Ethereum Transaction')
-
+			
 			try {
 				const tx = await signer.sendTransaction({
 					to: merchantETH,
-					value: ethers.utils.parseEther(price.toString())
+					value: ethers.utils.parseEther(price.toFixed(5))
 				})
 				
 				var txId = await createTransaction(email, fields, account?.account, '')
