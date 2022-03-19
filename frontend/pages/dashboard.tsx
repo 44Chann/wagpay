@@ -25,7 +25,7 @@ import {
   ChevronRightIcon,
   OfficeBuildingIcon,
   SearchIcon,
-  PlusIcon
+  PlusIcon,
 } from '@heroicons/react/solid'
 import { supabase } from '../supabase'
 import { User } from './api/userType'
@@ -35,8 +35,18 @@ import { useRouter } from 'next/router'
 const navigation = [
   { name: 'Overview', comp_name: 'overview', icon: HomeIcon, current: true },
   { name: 'Pages', comp_name: 'pages', icon: CollectionIcon, current: false },
-  { name: 'Products', comp_name: 'products', icon: ShoppingCartIcon, current: false },
-  { name: 'Transactions', comp_name: 'transactions', icon: CreditCardIcon, current: false },
+  {
+    name: 'Products',
+    comp_name: 'products',
+    icon: ShoppingCartIcon,
+    current: false,
+  },
+  {
+    name: 'Transactions',
+    comp_name: 'transactions',
+    icon: CreditCardIcon,
+    current: false,
+  },
   { name: 'Settings', comp_name: 'settings', icon: CogIcon, current: false },
 ]
 
@@ -105,23 +115,22 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
 }
 
-
 export default function Dashboard() {
   const { push } = useRouter()
-  
+
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [currentTab, setCurrentTab] = useState('overview')
   const [user, setUser] = useState<User>({} as User)
-	const [visits, setVisits] = useState(0)
-	const [money, setMoney] = useState('$0')
-	const [sold, setSold] = useState(0)
+  const [visits, setVisits] = useState(0)
+  const [money, setMoney] = useState('$0')
+  const [sold, setSold] = useState(0)
   const [running, setRunning] = useState(false)
 
   useLayoutEffect(() => {
     try {
       const user = supabase.auth.user()
       console.log('user1')
-      if(!user) {
+      if (!user) {
         console.log('user')
         push('/auth')
         return
@@ -138,11 +147,11 @@ export default function Dashboard() {
   useEffect(() => console.log(running, 'running'), [running])
 
   const getMoneyEarned = async () => {
-    if(running) {
+    if (running) {
       const data = await fetch('/api/products/money_earned', {
         headers: {
-          'bearer-token': supabase.auth.session()?.access_token as string
-        }
+          'bearer-token': supabase.auth.session()?.access_token as string,
+        },
       })
       const res = await data.json()
       cards[2].amount = '$' + res
@@ -151,11 +160,11 @@ export default function Dashboard() {
   }
 
   const totalProductSold = async () => {
-    if(running) {
+    if (running) {
       const data = await fetch('/api/products/product_sold', {
         headers: {
-          'bearer-token': supabase.auth.session()?.access_token as string
-        }
+          'bearer-token': supabase.auth.session()?.access_token as string,
+        },
       })
       const res = await data.json()
       cards[1].amount = res
@@ -164,11 +173,11 @@ export default function Dashboard() {
   }
 
   const totalVisits = async () => {
-    if(running) {
+    if (running) {
       const data = await fetch('/api/pages/visits', {
         headers: {
-          'bearer-token': supabase.auth.session()?.access_token as string
-        }
+          'bearer-token': supabase.auth.session()?.access_token as string,
+        },
       })
       const res = await data.json()
       cards[0].amount = res
@@ -178,11 +187,11 @@ export default function Dashboard() {
   }
 
   const totalPages = async () => {
-    if(running) {
+    if (running) {
       const data = await fetch('/api/pages/number_of_pages', {
         headers: {
-          'bearer-token': supabase.auth.session()?.access_token as string
-        }
+          'bearer-token': supabase.auth.session()?.access_token as string,
+        },
       })
       const res = await data.json()
       cards[3].amount = res
@@ -191,7 +200,7 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    if(running) {
+    if (running) {
       getMoneyEarned()
       totalProductSold()
       totalVisits()
@@ -200,15 +209,21 @@ export default function Dashboard() {
   }, [running])
 
   const changeTab = (nextTab: string, nextId: number) => {
-    const index = navigation.map((e) => {return e.comp_name}).indexOf(currentTab)
-    if(index === -1) return
+    const index = navigation
+      .map((e) => {
+        return e.comp_name
+      })
+      .indexOf(currentTab)
+    if (index === -1) return
     navigation[index].current = false
     navigation[nextId].current = true
     setCurrentTab(nextTab)
   }
 
   const getUser = async () => {
-    const data = await fetch(`/api/user/get?email=${supabase.auth.user()?.email}`)
+    const data = await fetch(
+      `/api/user/get?email=${supabase.auth.user()?.email}`
+    )
     const res = await data.json()
 
     setUser(res)
@@ -247,7 +262,7 @@ export default function Dashboard() {
               leaveFrom="translate-x-0"
               leaveTo="-translate-x-full"
             >
-              <div className="relative flex w-full max-w-xs flex-1 flex-col bg-cyan-700 pt-5 pb-4">
+              <div className="relative flex w-full max-w-xs flex-1 flex-col bg-fuchsia-700 pt-5 pb-4">
                 <Transition.Child
                   as={Fragment}
                   enter="ease-in-out duration-300"
@@ -277,7 +292,7 @@ export default function Dashboard() {
                   </h1>
                 </div>
                 <nav
-                  className="mt-5 h-full flex-shrink-0 divide-y divide-cyan-800 overflow-y-auto"
+                  className="mt-5 h-full flex-shrink-0 divide-y divide-fuchsia-800 overflow-y-auto"
                   aria-label="Sidebar"
                 >
                   <div className="space-y-1 px-2">
@@ -287,14 +302,14 @@ export default function Dashboard() {
                         onClick={() => changeTab(item.comp_name, idx)}
                         className={classNames(
                           item.current
-                            ? 'bg-cyan-800 text-white'
-                            : 'text-cyan-100 hover:bg-cyan-600 hover:text-white',
+                            ? 'bg-fuchsia-500 text-white'
+                            : 'text-fuchsia-100 hover:bg-fuchsia-600 hover:text-white',
                           'group flex items-center rounded-md px-2 py-2 text-base font-medium'
                         )}
                         aria-current={item.current ? 'page' : undefined}
                       >
                         <item.icon
-                          className="mr-4 h-6 w-6 flex-shrink-0 text-cyan-200"
+                          className="mr-4 h-6 w-6 flex-shrink-0 text-fuchsia-200"
                           aria-hidden="true"
                         />
                         {item.name}
@@ -307,10 +322,10 @@ export default function Dashboard() {
                         <a
                           key={item.name}
                           href={item.href}
-                          className="group flex items-center rounded-md px-2 py-2 text-base font-medium text-cyan-100 hover:bg-cyan-600 hover:text-white"
+                          className="group flex items-center rounded-md px-2 py-2 text-base font-medium text-fuchsia-100 hover:bg-fuchsia-600 hover:text-white"
                         >
                           <item.icon
-                            className="mr-4 h-6 w-6 text-cyan-200"
+                            className="mr-4 h-6 w-6 text-fuchsia-200"
                             aria-hidden="true"
                           />
                           {item.name}
@@ -330,12 +345,12 @@ export default function Dashboard() {
         {/* Static sidebar for desktop */}
         <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
           {/* Sidebar component, swap this element with another sidebar if you like */}
-          <div className="flex flex-grow flex-col overflow-y-auto bg-cyan-700 pt-5 pb-4">
+          <div className="flex flex-grow flex-col overflow-y-auto bg-fuchsia-700 pt-5 pb-4">
             <div className="flex flex-shrink-0 items-center px-4">
               <h1 className="text-2xl font-extrabold text-white">WagPay</h1>
             </div>
             <nav
-              className="mt-5 flex flex-1 flex-col divide-y divide-cyan-800 overflow-y-auto"
+              className="mt-5 flex flex-1 flex-col divide-y divide-fuchsia-800 overflow-y-auto"
               aria-label="Sidebar"
             >
               <div className="space-y-1 px-2">
@@ -345,14 +360,14 @@ export default function Dashboard() {
                     onClick={() => changeTab(item.comp_name, idx)}
                     className={classNames(
                       item.current
-                        ? 'bg-cyan-800 text-white'
-                        : 'text-cyan-100 hover:bg-cyan-600 hover:text-white',
-                      'group flex items-center cursor-pointer rounded-md px-2 py-2 text-sm font-medium leading-6'
+                        ? 'bg-fuchsia-800 text-white'
+                        : 'text-fuchsia-100 hover:bg-fuchsia-600 hover:text-white',
+                      'group flex cursor-pointer items-center rounded-md px-2 py-2 text-sm font-medium leading-6'
                     )}
                     aria-current={item.current ? 'page' : undefined}
                   >
                     <item.icon
-                      className="mr-4 h-6 w-6 flex-shrink-0 text-cyan-200"
+                      className="mr-4 h-6 w-6 flex-shrink-0 text-fuchsia-200"
                       aria-hidden="true"
                     />
                     {item.name}
@@ -365,10 +380,10 @@ export default function Dashboard() {
                     <a
                       key={item.name}
                       href={item.href}
-                      className="group flex items-center rounded-md px-2 py-2 text-sm font-medium leading-6 text-cyan-100 hover:bg-cyan-600 hover:text-white"
+                      className="group flex items-center rounded-md px-2 py-2 text-sm font-medium leading-6 text-fuchsia-100 hover:bg-fuchsia-600 hover:text-white"
                     >
                       <item.icon
-                        className="mr-4 h-6 w-6 text-cyan-200"
+                        className="mr-4 h-6 w-6 text-fuchsia-200"
                         aria-hidden="true"
                       />
                       {item.name}
@@ -384,7 +399,7 @@ export default function Dashboard() {
           <div className="relative z-10 flex h-16 flex-shrink-0 border-b border-gray-200 bg-white lg:border-none">
             <button
               type="button"
-              className="border-r border-gray-200 px-4 text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-cyan-500 lg:hidden"
+              className="border-r border-gray-200 px-4 text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-fuchsia-500 lg:hidden"
               onClick={() => setSidebarOpen(true)}
             >
               <span className="sr-only">Open sidebar</span>
@@ -396,7 +411,7 @@ export default function Dashboard() {
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">
                   <div>
-                    <Menu.Button className="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 lg:rounded-md lg:p-2 lg:hover:bg-gray-50">
+                    <Menu.Button className="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-2 lg:rounded-md lg:p-2 lg:hover:bg-gray-50">
                       <img
                         className="h-8 w-8 rounded-full"
                         src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
@@ -474,7 +489,9 @@ export default function Dashboard() {
             {currentTab === 'pages' && <Pages cards={cards} />}
             {currentTab === 'transactions' && <Transactions cards={cards} />}
             {currentTab === 'products' && <Products cards={cards} />}
-            {currentTab === 'settings' && <Settings cards={cards} transactions={transactions} />}
+            {currentTab === 'settings' && (
+              <Settings cards={cards} transactions={transactions} />
+            )}
           </main>
         </div>
       </div>
