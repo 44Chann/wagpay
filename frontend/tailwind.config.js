@@ -10,6 +10,7 @@ module.exports = {
         urban: ['Urbanist', 'sans-serif'],
         eds: ['Eds', 'sans-serif'],
         edds: ['Edds', 'sans-serif'],
+        jakarta: ['Jakarta', 'sans-serif'],
       },
     },
   },

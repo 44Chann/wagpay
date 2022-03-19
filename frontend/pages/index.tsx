@@ -20,6 +20,7 @@ import {
   ServerIcon,
   ShieldCheckIcon,
   XIcon,
+  PaperAirplaneIcon
 } from '@heroicons/react/outline'
 import { ChevronRightIcon, ExternalLinkIcon } from '@heroicons/react/solid'
 
@@ -38,42 +39,43 @@ import { HeroSection } from '../components/HeroSection/HeroSection'
 
 const features = [
   {
-    name: 'Push to Deploy',
+    name: 'Payment Pages',
     description:
-      'Ac tincidunt sapien vehicula erat auctor pellentesque rhoncus. Et magna sit morbi vitae lobortis.',
+      'Easily receive payments in multiple cryptocurrencies like ETH, USDC, SOL and more coming soon',
     icon: CloudUploadIcon,
   },
   {
-    name: 'SSL Certificates',
+    name: 'International Payments',
     description:
-      'Qui aut temporibus nesciunt vitae dicta repellat sit dolores pariatur. Temporibus qui illum aut.',
-    icon: LockClosedIcon,
+      'Receive Cryptocurrencies from anywhere in the world with 0 fees and *superfast speed',
+    icon: PaperAirplaneIcon,
   },
   {
-    name: 'Simple Queues',
+    name: 'Powerful Dashboard to track payments',
     description:
-      'Rerum quas incidunt deleniti quaerat suscipit mollitia. Amet repellendus ut odit dolores qui.',
+      'WagPay provides a very powerful dashboard with each and every data point that your business needs',
     icon: RefreshIcon,
   },
   {
-    name: 'Advanced Security',
+    name: 'Zero Fees',
     description:
-      'Ullam laboriosam est voluptatem maxime ut mollitia commodi. Et dignissimos suscipit perspiciatis.',
+      "WagPay doesn't charge any fees to access dashboard or on your cryptocurrency payments",
     icon: ShieldCheckIcon,
   },
   {
-    name: 'Powerful API',
+    name: 'Great SDK',
     description:
-      'Ab a facere voluptatem in quia corrupti veritatis aliquam. Veritatis labore quaerat ipsum quaerat id.',
+      'Get Access to a powerful SDK with which you can directly integrate cryptocurrencies payments from your own store (coming soon)',
     icon: CogIcon,
   },
   {
-    name: 'Database Backups',
+    name: 'Receive Notifications',
     description:
-      'Quia qui et est officia cupiditate qui consectetur. Ratione similique et impedit ea ipsum et.',
+      'Receive Emails on every successful purchase with a generated invoice',
     icon: ServerIcon,
   },
 ]
+
 const blogPosts = [
   {
     id: 1,
@@ -241,11 +243,11 @@ const Homepage: React.FC = () => {
                         aria-hidden="true"
                       />
                     </a>
-                    <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-white sm:mt-5 sm:text-6xl lg:mt-6 xl:text-6xl">
-                      <span className="block font-edds">
+                    <h1 className="font-jakarta mt-4 text-4xl font-extrabold tracking-tight text-white sm:mt-5 sm:text-6xl lg:mt-6 xl:text-6xl">
+                      <span className="block">
                         Next generation payment gateway
                       </span>
-                      <span className="block bg-gradient-to-r from-teal-200 to-cyan-400 bg-clip-text pb-3 font-edds text-transparent sm:pb-5">
+                      <span className="block bg-gradient-to-r from-teal-200 to-cyan-400 bg-clip-text pb-3 text-transparent sm:pb-5">
                         for the internet
                       </span>
                     </h1>
@@ -307,7 +309,7 @@ const Homepage: React.FC = () => {
                 <h2 className="text-base font-semibold uppercase tracking-wider text-cyan-600">
                   Painless
                 </h2>
-                <p className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                <p className="font-jakarta mt-2 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
                   WagPay Dashboard - Managing Payments made easy
                 </p>
                 <p className="mx-auto mt-5 max-w-prose text-xl text-gray-500">
@@ -330,21 +332,20 @@ const Homepage: React.FC = () => {
           <div className="relative bg-white py-16 sm:py-24 lg:py-32">
             <div className="mx-auto max-w-md px-4 text-center sm:max-w-3xl sm:px-6 lg:max-w-7xl lg:px-8">
               <h2 className="text-base font-semibold uppercase tracking-wider text-cyan-600">
-                Deploy faster
+                Accept Crypto Fastly
               </h2>
-              <p className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+              <p className="font-jakarta mt-2 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
                 Everything you need to get started with crypto payments
               </p>
-              <p className="mx-auto mt-5 max-w-prose text-xl text-gray-500">
-                Phasellus lorem quam molestie id quisque diam aenean nulla in.
-                Accumsan in quis quis nunc, ullamcorper malesuada. Eleifend
-                condimentum id viverra nulla.
+              <p className="font-inter mx-auto mt-5 max-w-prose text-xl text-gray-500">
+                At WagPay, We have every feature that you will need to accept payments in crypto 
+                and track them, more features coming soon!
               </p>
               <div className="mt-12">
                 <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
                   {features.map((feature) => (
                     <div key={feature.name} className="pt-6">
-                      <div className="flow-root rounded-lg bg-gray-50 px-6 pb-8">
+                      <div className="font-inter flow-root rounded-lg bg-gray-50 px-6 pb-8">
                         <div className="-mt-6">
                           <div>
                             <span className="inline-flex items-center justify-center rounded-md bg-gradient-to-r from-teal-500 to-cyan-600 p-3 shadow-lg">
@@ -354,7 +355,7 @@ const Homepage: React.FC = () => {
                               />
                             </span>
                           </div>
-                          <h3 className="mt-8 text-lg font-medium tracking-tight text-gray-900">
+                          <h3 className="mt-8 text-lg font-bold tracking-tight text-gray-900">
                             {feature.name}
                           </h3>
                           <p className="mt-5 text-base text-gray-500">
