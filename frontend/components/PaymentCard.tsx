@@ -10,16 +10,16 @@ import { ExternalProvider } from "@ethersproject/providers";
 import * as splToken from '@solana/spl-token/src'
 import toast from 'react-hot-toast'
 
-type supported_currencies = 'Ethereum' | 'Solana'
+type supported_currencies = 'Ethereum' | 'Solana' | 'USDC (Ethereum)'
 
 const currencies = [
 	{
 		'Ethereum': {
 			wallets: ['Metamask', 'WalletConnect', 'Coinbase Wallet']
 		},
-		// 'USDC (Ethereum)': {
-		// 	wallets: ['Metamask', 'WalletConnect', 'Coinbase Wallet']
-		// },
+		'USDC (Ethereum)': {
+			wallets: ['Metamask', 'WalletConnect', 'Coinbase Wallet']
+		},
 		'Solana': {
 			wallets: ['Phantom']
 		}
@@ -267,7 +267,7 @@ const PaymentCard = ({ setURL, fields, createTransaction, updateTransaction, set
 				toast.dismiss(toastIdTransact)
 				toast.error('Transaction not successful')
 			}
-		} else if(option.toLowerCase() === 'ethereum' || option.toLowerCase() === 'usdc (ethereum)') {
+		} else if(option.toLowerCase() === 'ethereum') {
 			var toastTransact, toastConnect
 			
 			toastConnect = toast.loading('Connecting Ethereum Wallet')
@@ -298,6 +298,40 @@ const PaymentCard = ({ setURL, fields, createTransaction, updateTransaction, set
 				toast.dismiss(toastTransact)
 				toast.success('Transaction not successful')
 				console.log("WagPay: Can't send transaction!", e)
+			}
+		} else if (option.toLowerCase() === 'usdc (ethereum)') {
+			var toastTransact, toastConnect
+			try {
+				toastConnect = toast.loading('Connecting Ethereum Wallet')
+				const account = await connectData.connectors.find(connector => connector.name.toLowerCase() === wallet.toLowerCase())?.connect()
+				setETH(account?.account as string)
+				const ethProvider = new ethers.providers.Web3Provider(window.ethereum as ExternalProvider);
+				const signer = ethProvider.getSigner()
+				toast.dismiss(toastConnect)
+				toast.success('Successfully Connected to ' + wallet)
+
+				toastTransact = toast.loading('Creating Ethereum Transaction')
+				
+				let erc20abi = ["function transfer(address to, uint amount) returns (bool)"]
+				let erc20contract = new ethers.Contract('0xF61Cffd6071a8DB7cD5E8DF1D3A5450D9903cF1c', erc20abi, signer)
+				console.log(price.toFixed(5))
+				let tx = await erc20contract.transfer(merchantETH, ethers.utils.parseUnits(price.toString(), 6))
+				
+				toast.dismiss(toastTransact)
+				toast.success('Created Transaction')
+				
+				toastTransact = toast.loading('Waiting for Ethereum Transaction')
+				await tx.wait()
+				toast.dismiss(toastTransact)
+				toast.success('Transaction Succesful')
+				var txId = await createTransaction(email, fields, account?.account, '')
+				console.log(tx)
+				await updateTransaction(txId, true, tx.hash)
+			} catch (e) {
+				toast.dismiss(toastTransact)
+				toast.error("Can't Transact")
+				var txId = await createTransaction(email, fields, eth, '')
+				await updateTransaction(txId, false, '')
 			}
 		}
 	}
