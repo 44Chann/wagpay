@@ -31,6 +31,7 @@ import { supabase } from '../supabase'
 import { User } from './api/userType'
 import PageHeader from '../components/Dashboard/PageHeader'
 import { useRouter } from 'next/router'
+import * as blockies from 'ethereum-blockies-png'
 
 const navigation = [
   { name: 'Overview', comp_name: 'overview', icon: HomeIcon, current: true },
@@ -116,6 +117,12 @@ export default function Dashboard() {
 	const [money, setMoney] = useState('$0')
 	const [sold, setSold] = useState(0)
   const [running, setRunning] = useState(false)
+  const [img, setImg] = useState('')
+	
+	useEffect(() => {
+		const dataURL = blockies.createDataURL({ seed: user.username })
+		setImg(dataURL)
+	}, [user])
 
   useLayoutEffect(() => {
     try {
@@ -399,7 +406,7 @@ export default function Dashboard() {
                     <Menu.Button className="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 lg:rounded-md lg:p-2 lg:hover:bg-gray-50">
                       <img
                         className="h-8 w-8 rounded-full"
-                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                        src={img}
                         alt=""
                       />
                       <span className="ml-3 hidden text-sm font-medium text-gray-700 lg:block">

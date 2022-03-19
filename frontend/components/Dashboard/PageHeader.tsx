@@ -21,7 +21,8 @@ import {
 	PlusIcon,
 	XCircleIcon
 } from '@heroicons/react/solid'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import * as blockies from 'ethereum-blockies-png'
 import NewStore from './NewStore'
 
 interface Props {
@@ -29,8 +30,14 @@ interface Props {
 }
 
 const PageHeader = ({ user }: Props) => {
+	const [img, setImg] = useState('')
 	const [isOpen, setIsOpen] = useState(false)
 	
+	useEffect(() => {
+		const dataURL = blockies.createDataURL({ seed: user.username })
+		setImg(dataURL)
+	}, [user])
+
 	return (
 		<div className="bg-white shadow">
 			<div className="px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
@@ -38,16 +45,16 @@ const PageHeader = ({ user }: Props) => {
 				<div className="min-w-0 flex-1">
 				<div className="flex items-center">
 					<img
-					className="hidden h-16 w-16 rounded-full sm:block"
-					src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.6&w=256&h=256&q=80"
-					alt=""
+						className="hidden h-16 w-16 rounded-full sm:block"
+						src={img}
+						alt=""
 					/>
 					<div>
 					<div className="flex items-center">
 						<img
-						className="h-16 w-16 rounded-full sm:hidden"
-						src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.6&w=256&h=256&q=80"
-						alt=""
+							className="h-16 w-16 rounded-full sm:hidden"
+							src={img}
+							alt=""
 						/>
 						<h1 className="ml-3 font-inter text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:leading-9">
 						Good morning, {user.username}
