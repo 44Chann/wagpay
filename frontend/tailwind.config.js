@@ -8,6 +8,8 @@ module.exports = {
       fontFamily: {
         inter: ['Inter', 'sans-serif'],
         urban: ['Urbanist', 'sans-serif'],
+        eds: ['Eds', 'sans-serif'],
+        edds: ['Edds', 'sans-serif'],
       },
     },
   },

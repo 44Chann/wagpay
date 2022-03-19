@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Eds';
+  src: url('/fonts/EudoxusSans-Bold.woff2');
+}
+
+@font-face {
+  font-family: 'Edds';
+  src: url('/fonts/EudoxusSans-ExtraBold.woff2');
+}
+
 /* .wallet-adapter-button {
 	background: transparent !important;
 	width: 100% !important;
