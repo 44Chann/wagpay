@@ -1,10 +1,20 @@
 import Product from "../components/Product"
 import PaymentCard from "../components/PaymentCard"
-import { useState } from "react"
+import { ChangeEvent, useLayoutEffect, useRef, useState } from "react"
 import { useEffect } from "react"
 import { supabase } from "../supabase"
 import { useRouter } from "next/router"
 import { Product as ProductInterface } from './api/product'
+import QRCodeStyling, {
+	DrawType,
+	TypeNumber,
+	Mode,
+	ErrorCorrectionLevel,
+	DotType,
+	CornerSquareType,
+	CornerDotType,
+	Options
+} from "qr-code-styling";
 
 interface Page {
 	id: number
@@ -74,6 +84,7 @@ const Store = ({ store }: Props) => {
 	const [qrCode, setQrCode] = useState('https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png')
 	const [selectedProducts, setSelectedProducts] = useState<ProductInterface[]>([])
 	const [totalPrice, setTotalPrice] = useState(0)
+	const [url, setUrl] = useState("https://qr-code-styling.com");
 
 	useEffect(() => console.log(qrCode), [qrCode])
 
@@ -142,6 +153,91 @@ const Store = ({ store }: Props) => {
 		console.log(res)
 	}
 
+	const [options, setOptions] = useState<Options>({
+		width: 300,
+		height: 300,
+		type: 'svg' as DrawType,
+		data: 'http://qr-code-styling.com',
+		image: '/spay.svg',
+		margin: 10,
+		qrOptions: {
+			typeNumber: 0 as TypeNumber,
+			mode: 'Byte' as Mode,
+			errorCorrectionLevel: 'Q' as ErrorCorrectionLevel
+		},
+		imageOptions: {
+			hideBackgroundDots: true,
+			imageSize: 0.4,
+			margin: 20,
+			crossOrigin: 'anonymous',
+		},
+		dotsOptions: {
+			color: '#222222',
+			// gradient: {
+			//   type: 'linear', // 'radial'
+			//   rotation: 0,
+			//   colorStops: [{ offset: 0, color: '#8688B2' }, { offset: 1, color: '#77779C' }]
+			// },
+			type: 'rounded' as DotType
+		},
+		backgroundOptions: {
+			color: '#fff',
+			// gradient: {
+			//   type: 'linear', // 'radial'
+			//   rotation: 0,
+			//   colorStops: [{ offset: 0, color: '#ededff' }, { offset: 1, color: '#e6e7ff' }]
+			// },
+		},
+		cornersSquareOptions: {
+			color: '#222222',
+			type: 'extra-rounded' as CornerSquareType,
+			// gradient: {
+			//   type: 'linear', // 'radial'
+			//   rotation: 180,
+			//   colorStops: [{ offset: 0, color: '#25456e' }, { offset: 1, color: '#4267b2' }]
+			// },
+		},
+		cornersDotOptions: {
+			color: '#222222',
+			type: 'dot' as CornerDotType,
+			// gradient: {
+			//   type: 'linear', // 'radial'
+			//   rotation: 180,
+			//   colorStops: [{ offset: 0, color: '#00266e' }, { offset: 1, color: '#4060b3' }]
+			// },
+		}
+	});
+	
+	const [qrCodes, setQrCodes] = useState<QRCodeStyling>()
+	const ref = useRef<HTMLDivElement>(null);
+
+	useLayoutEffect(() => {
+		if(typeof window !== 'undefined') {
+			const QRCodeStyling = require('qr-code-styling')
+			setQrCodes(new QRCodeStyling(options))
+		}
+	}, [])
+
+	useEffect(() => {
+		if(!qrCodes) return
+		if (ref.current) {
+			qrCodes.append(ref.current);
+		}
+	}, [qrCodes, ref]);
+
+	useEffect(() => {
+		if (!qrCodes) return;
+		qrCodes.update(options);
+	}, [qrCodes, options]);
+
+	const onDataChange = (event: ChangeEvent<HTMLInputElement>) => {
+		if(!qrCodes) return
+		setOptions(options => ({
+			...options,
+			data: event.target.value
+		}));
+	};
+
 	return (
 		<div className="relative bg-[#6C7EE1]/20 w-full min-h-screen flex justify-start items-center font-urban">
 			<div className="w-1/2 h-full flex flex-col justify-center items-start pl-24 space-y-5">
@@ -156,11 +252,11 @@ const Store = ({ store }: Props) => {
 				</p>
 			</div>
 			<div className="w-1/2 h-full flex justify-center items-center">
-				<PaymentCard updateTransaction={updateTransaction} createTransaction={createTransaction} storeId={store.id} fields={store.fields} totalPrice={totalPrice} merchantETH={store.eth_address as string} merchantSOL={store.sol_address as string} setIsModalOpen={setIsModalOpen} setQrCode={setQrCode} />
+				<PaymentCard setURL={setUrl} updateTransaction={updateTransaction} createTransaction={createTransaction} storeId={store.id} fields={store.fields} totalPrice={totalPrice} merchantETH={store.eth_address as string} merchantSOL={store.sol_address as string} setIsModalOpen={setIsModalOpen} setQrCode={setQrCode} />
 			</div>
 			<div className={(isModalOpen ? "" : "hidden") + " w-full h-full backdrop-blur-sm absolute z-50"} onClick={() => setIsModalOpen(false)}>
-				<div className={(isModalOpen ? "" : "hidden") + " absolute fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-white w-64 h-64"}>
-					<img src={qrCode} alt="" className="w-full h-full" />
+				<div className={(isModalOpen ? "" : "hidden") + " absolute fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-transparent w-64 h-64"}>
+					<div ref={ref}></div>
 				</div>
 			</div>
 		</div>

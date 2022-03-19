@@ -1,5 +1,5 @@
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { useAccount, useConnect, useSignMessage } from "wagmi"
 import EthereumQRPlugin from 'ethereum-qr-code'
 import { clusterApiUrl, Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
@@ -39,19 +39,17 @@ interface Props {
 	storeId: number
 	createTransaction: Function
 	updateTransaction: Function
+	setURL: Function
 }
 
 const CrossIcon = () => {
 	return <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
 }
 
-const PaymentCard = ({ fields, createTransaction, updateTransaction, setIsModalOpen, merchantETH, merchantSOL, setQrCode, totalPrice }: Props) => {
+const PaymentCard = ({ setURL, fields, createTransaction, updateTransaction, setIsModalOpen, merchantETH, merchantSOL, setQrCode, totalPrice }: Props) => {
 	const [{ data: connectData, error: connectError }, connect] = useConnect()
 	const [{ data: accountData }, disconnect] = useAccount({
 	  fetchEns: true,
-	})
-	const [{ data, error, loading }, signMessage] = useSignMessage({
-		message: 'gm! \n\n Join WagPay Waitlist!',
 	})
 
 	const connectSOL = async () => {
@@ -103,9 +101,10 @@ const PaymentCard = ({ fields, createTransaction, updateTransaction, setIsModalO
 
 			const url = encodeURL({ recipient, amount, reference, label, message, memo });
 
-			const qrCode = createQR(url);
-			console.log(qrCode)
-			setQrCode(qrCode._qr?.createDataURL())
+			// const qrCode = createQR(url);
+			// console.log(qrCode)
+			setURL(url)
+			// setQrCode(qrCode._qr?.createDataURL())
 			setIsModalOpen(true)
 
 			console.log('\n5. Find the transaction');
@@ -367,9 +366,12 @@ const PaymentCard = ({ fields, createTransaction, updateTransaction, setIsModalO
 							<p>${totalPrice}</p>
 							<p>~{price.toFixed(2)} {option.toLowerCase() === 'ethereum' ? 'ETH' : (option.toLowerCase() === 'solana' ? 'SOL' : 'USDC')}</p>
 						</div>
-						<div onClick={() => qrCode()} className="w-10 h-10 rounded-xl cursor-pointer">
-							<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png" alt="" className="w-full h-full" />
-						</div>
+						{option.toLowerCase() === 'solana' && 
+							<div onClick={() => qrCode()} className="w-10 h-10 rounded-xl cursor-pointer">
+								<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png" alt="" className="w-full h-full" />
+							</div>
+						}
+						{/* <div ref={ref}></div> */}
 					</div>
 					<button onClick={pay} className="w-full bg-gradient-to-tr from-[#4B74FF] to-[#9281FF] text-white rounded-xl py-3 text-sm">Pay</button>
 				</div>
