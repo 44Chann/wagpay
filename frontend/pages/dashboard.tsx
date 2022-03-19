@@ -18,15 +18,7 @@ import {
   TrendingUpIcon,
   XIcon,
 } from '@heroicons/react/outline'
-import {
-  CashIcon,
-  CheckCircleIcon,
-  ChevronDownIcon,
-  ChevronRightIcon,
-  OfficeBuildingIcon,
-  SearchIcon,
-  PlusIcon,
-} from '@heroicons/react/solid'
+import { CashIcon, ChevronDownIcon } from '@heroicons/react/solid'
 import { supabase } from '../supabase'
 import { User } from './api/userType'
 import PageHeader from '../components/Dashboard/PageHeader'
