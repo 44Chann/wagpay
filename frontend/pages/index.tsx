@@ -233,9 +233,9 @@ const Homepage: React.FC = () => {
                       className="inline-flex items-center rounded-full bg-black p-1 pr-2 text-white hover:text-gray-200 sm:text-base lg:text-sm xl:text-base"
                     >
                       <span className="rounded-full bg-gradient-to-r from-teal-500 to-cyan-600 px-3 py-0.5 text-xs font-semibold uppercase leading-5 tracking-wide text-white">
-                        Join waitlist
+                        Claim your Username
                       </span>
-                      <span className="ml-4 text-sm">Click here</span>
+                      <a href='#claim' className="ml-4 text-sm">Click here</a>
                       <ChevronRightIcon
                         className="ml-2 h-5 w-5 text-gray-500"
                         aria-hidden="true"
@@ -276,7 +276,7 @@ const Homepage: React.FC = () => {
                               type="submit"
                               className="block w-full rounded-md bg-gradient-to-r from-teal-500 to-cyan-600 py-3 px-4 font-medium text-white shadow hover:from-teal-600 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-gray-900"
                             >
-                              Claim username
+                              Sign up
                             </button>
                           </div>
                         </div>
@@ -291,7 +291,7 @@ const Homepage: React.FC = () => {
                   <div className="mx-auto max-w-md px-4 sm:max-w-2xl sm:px-6 lg:max-w-none lg:px-0">
                     <img
                       className="w-full lg:absolute lg:inset-y-0 lg:left-0 lg:h-full lg:w-auto lg:max-w-none"
-                      src="https://tailwindui.com/img/component-images/cloud-illustration-teal-cyan.svg"
+                      src="https://side-kicks.xyz/hero.png"
                       alt=""
                     />
                   </div>
@@ -370,7 +370,7 @@ const Homepage: React.FC = () => {
           </div>
 
           {/* Testimonial section */}
-          <div className="bg-gradient-to-r from-teal-500 to-cyan-600 pb-16 lg:relative lg:z-10 lg:pb-0">
+          <div id='claim' className="bg-gradient-to-r from-teal-500 to-cyan-600 pb-16 lg:relative lg:z-10 lg:pb-0">
             <div className="lg:mx-auto lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-8 lg:px-8">
               <div className="relative lg:-my-8">
                 <div

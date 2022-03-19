@@ -104,24 +104,30 @@ const NewStore = (props: Props) => {
 	
 	const submit = async () => {
 		const toastId = toast.loading('Creating Store')
-		const data = await fetch('/api/pages/create', {
-			method: 'POST',
-			body: JSON.stringify({
-				title: title,
-				logo: logo,
-				description: description,
-				social_links: socialLinks,
-				accepted_currencies: currencies,
-				slug: slug,
-				eth_address: eth,
-				sol_address: sol,
-				products: products,
-				fields: fields
-			}),
-			headers: {
-				'bearer-token': supabase.auth.session()?.access_token as string
-			}
-		})
+		try {
+			var data = await fetch('/api/pages/create', {
+				method: 'POST',
+				body: JSON.stringify({
+					title: title,
+					logo: logo,
+					description: description,
+					social_links: socialLinks,
+					accepted_currencies: currencies,
+					slug: slug,
+					eth_address: eth,
+					sol_address: sol,
+					products: products,
+					fields: fields
+				}),
+				headers: {
+					'bearer-token': supabase.auth.session()?.access_token as string
+				}
+			})
+		} catch (e) {
+			toast.dismiss(toastId)
+			toast.error("Can't create a store")
+			return
+		}
 
 		const res = await data.json()
 

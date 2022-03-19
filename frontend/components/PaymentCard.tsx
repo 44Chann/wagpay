@@ -77,7 +77,24 @@ const PaymentCard = ({ setURL, fields, createTransaction, updateTransaction, set
 	useEffect(() => console.log(eth), [eth])
 	useEffect(() => console.log(sol), [sol])
 
+	const checkIfAllFilled = () => {
+		for(let i=0;i<fields.length;i++) {
+			if(!fields[i].value) return false
+		}
+		
+		return true
+	}
+
 	const qrCode = async () => {
+		if(!email || !checkIfAllFilled()) {
+			toast.error('Fill all Fields')
+			return
+		}
+
+		if(totalPrice <= 0) {
+			toast.error('Select a Product')
+			return
+		}
 		if(option.toLowerCase() === 'ethereum') {
 			const qr = new EthereumQRPlugin()
 			const qrCode = await qr.toDataUrl({
@@ -191,6 +208,11 @@ const PaymentCard = ({ setURL, fields, createTransaction, updateTransaction, set
 	}
 
 	const pay = async () => {
+		if(!email || !checkIfAllFilled()) {
+			toast.error('Fill all Fields')
+			return
+		}
+
 		if(totalPrice <= 0) {
 			toast.error('Select a Product')
 			return
@@ -200,7 +222,12 @@ const PaymentCard = ({ setURL, fields, createTransaction, updateTransaction, set
 			var toastIdTransact
 			try {
 				const toastIdConnect = toast.loading('Connecting Solana Wallet')
-				await connectSOL()
+				try {
+					await connectSOL()
+				} catch(e) {
+					toast.dismiss(toastIdConnect)
+					toast.error('Solana Wallet Not Connected')
+				}
 				const solProvider = window.solana
 				const solConnection = new Connection(clusterApiUrl('mainnet-beta'))
 				toast.dismiss(toastIdConnect)
@@ -309,11 +336,11 @@ const PaymentCard = ({ setURL, fields, createTransaction, updateTransaction, set
 				<div className='z-50 w-full h-full p-5 flex flex-col justify-center items-center space-y-5'>
 					<h1 className='text-2xl font-bold'>WagPay</h1>
 					<div className="bg-white opacity-80 flex justify-between w-full  rounded-xl">
-						<input value={email} onChange={(e) => setEmail(e.target.value)}  type='email' placeholder="Email" className="font-semibold rounded-xl w-full pl-4 py-4 opacity-80 border-0 outline-none text-sm" />
+						<input value={email} onChange={(e) => setEmail(e.target.value)}  type='email' placeholder="Email" className="font-semibold rounded-xl w-full pl-4 py-4 opacity-80 border-0 outline-none text-sm" required />
 					</div>
 					{fields.map((value, idx) => (
 						<div className="bg-white opacity-80 flex justify-between w-full  rounded-xl">
-							<input value={fieldValues[idx].value} onChange={(e) => changeField(idx, e.target.value)}  type={value.type} placeholder={value.name} className="font-semibold rounded-xl w-full pl-4 py-4 opacity-80 border-0 outline-none text-sm" />
+							<input value={fieldValues[idx].value} onChange={(e) => changeField(idx, e.target.value)}  type={value.type} placeholder={value.name} className="font-semibold rounded-xl w-full pl-4 py-4 opacity-80 border-0 outline-none text-sm" required />
 						</div>
 					))}
 					<div className="w-full flex justify-between">

@@ -157,7 +157,7 @@ const Store = ({ store }: Props) => {
 		width: 300,
 		height: 300,
 		type: 'svg' as DrawType,
-		data: 'http://qr-code-styling.com',
+		data: '',
 		image: '/spay.svg',
 		margin: 10,
 		qrOptions: {
@@ -167,8 +167,8 @@ const Store = ({ store }: Props) => {
 		},
 		imageOptions: {
 			hideBackgroundDots: true,
-			imageSize: 0.4,
-			margin: 20,
+			imageSize: 0.3,
+			margin: 10,
 			crossOrigin: 'anonymous',
 		},
 		dotsOptions: {
@@ -230,13 +230,17 @@ const Store = ({ store }: Props) => {
 		qrCodes.update(options);
 	}, [qrCodes, options]);
 
-	const onDataChange = (event: ChangeEvent<HTMLInputElement>) => {
+	const onDataChange = (url: string) => {
 		if(!qrCodes) return
 		setOptions(options => ({
 			...options,
-			data: event.target.value
+			data: url
 		}));
 	};
+
+	useEffect(() => {
+		onDataChange(url)
+	}, [url])
 
 	return (
 		<div className="relative bg-[#6C7EE1]/20 w-full min-h-screen flex justify-start items-center font-urban">
