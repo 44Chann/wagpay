@@ -9,34 +9,22 @@ import { ToastContainer, toast } from 'react-toastify'
 import { useSignMessage } from 'wagmi'
 // claim imports end
 
-import { Fragment } from 'react'
-import { Popover, Transition } from '@headlessui/react'
 import {
-  CloudUploadIcon,
-  CogIcon,
-  LockClosedIcon,
   ViewGridIcon,
   CreditCardIcon,
-  ServerIcon,
   BellIcon,
   TerminalIcon,
   GlobeIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
 } from '@heroicons/react/outline'
 import { ChevronRightIcon, ExternalLinkIcon } from '@heroicons/react/solid'
 
-import Link from 'next/link'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 
-import How from '../components/How'
-import Features from '../components/features'
-import Designed from '../components/designed'
-import CTA from '../components/CTA'
 import Footer from '../components/Footer'
 import Navbar from '../components/Navbar/Navbar'
-import { HeroSection } from '../components/HeroSection/HeroSection'
 
 const features = [
   {
@@ -82,57 +70,28 @@ const blogPosts = [
     id: 1,
     title: 'Gauranteed Safety',
     href: '#',
-    date: 'Mar 16, 2020',
-    datetime: '2020-03-16',
     imageUrl:
       'https://images.unsplash.com/photo-1496128858413-b36217c2ce36?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1679&q=80',
     preview:
       'Millions of businesses of all sizes—from startups to large enterprises—use Wagpay’s software and APIs to accept payments, send payouts, and manage their businesses online.',
-    author: {
-      name: 'Roel Aufderehar',
-      imageUrl:
-        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      href: '#',
-    },
-    readingLength: '6 min',
   },
   {
     id: 2,
     title: 'Gauranteed Safety',
     href: '#',
-    date: 'Mar 10, 2020',
-    datetime: '2020-03-10',
-    category: { name: 'Video', href: '#' },
     imageUrl:
       'https://images.unsplash.com/photo-1547586696-ea22b4d4235d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1679&q=80',
     preview:
       'Millions of businesses of all sizes—from startups to large enterprises—use Wagpay’s software and APIs to accept payments, send payouts, and manage their businesses online.',
-    author: {
-      name: 'Brenna Goyette',
-      imageUrl:
-        'https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      href: '#',
-    },
-    readingLength: '4 min',
   },
   {
     id: 3,
     title: 'Gauranteed Safety',
     href: '#',
-    date: 'Feb 12, 2020',
-    datetime: '2020-02-12',
-    category: { name: 'Case Study', href: '#' },
     imageUrl:
       'https://images.unsplash.com/photo-1492724441997-5dc865305da7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1679&q=80',
     preview:
       'Millions of businesses of all sizes—from startups to large enterprises—use Wagpay’s software and APIs to accept payments, send payouts, and manage their businesses online.',
-    author: {
-      name: 'Daniela Metz',
-      imageUrl:
-        'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-      href: '#',
-    },
-    readingLength: '11 min',
   },
 ]
 
@@ -223,7 +182,7 @@ const Homepage: React.FC = () => {
       <Head>
         <title>WagPay</title>
       </Head>
-      <div className="font-inter h-full w-full">
+      <div className="h-full w-full font-inter">
         <Navbar />
         <main>
           <div className="bg-gray-900 pt-10 sm:pt-16 lg:overflow-hidden lg:pt-8 lg:pb-14 ">
@@ -235,20 +194,22 @@ const Homepage: React.FC = () => {
                       href="#"
                       className="inline-flex items-center rounded-full bg-black p-1 pr-2 text-white hover:text-gray-200 sm:text-base lg:text-sm xl:text-base"
                     >
-                      <span className="rounded-full bg-gradient-to-r from-teal-500 to-cyan-600 px-3 py-0.5 text-xs font-semibold uppercase leading-5 tracking-wide text-white">
+                      <span className="rounded-full bg-gradient-to-r from-rose-400 via-fuchsia-500 to-indigo-500 px-3 py-0.5 text-xs font-semibold uppercase leading-5 tracking-wide text-white">
                         Claim your Username
                       </span>
-                      <a href='#claim' className="ml-4 text-sm">Click here</a>
+                      <a href="#claim" className="ml-4 text-sm">
+                        Click here
+                      </a>
                       <ChevronRightIcon
                         className="ml-2 h-5 w-5 text-gray-500"
                         aria-hidden="true"
                       />
                     </a>
-                    <h1 className="font-jakarta space-y-2 mt-4 text-4xl font-black tracking-tight text-white sm:mt-5 sm:text-6xl lg:mt-6 xl:text-6xl">
+                    <h1 className="mt-4 space-y-2 font-jakarta text-4xl font-black tracking-tight text-white sm:mt-5 sm:text-6xl lg:mt-6 xl:text-6xl">
                       <span className="block">
                         Next generation payment gateway
                       </span>
-                      <span className="block bg-gradient-to-r from-teal-200 to-cyan-400 bg-clip-text pb-3 text-transparent sm:pb-5">
+                      <span className="block bg-gradient-to-r from-rose-400 via-fuchsia-500 to-indigo-500 bg-clip-text pb-3 text-transparent sm:pb-5">
                         for the internet
                       </span>
                     </h1>
@@ -277,7 +238,7 @@ const Homepage: React.FC = () => {
                           <div className="mt-3 sm:mt-0 sm:ml-3">
                             <button
                               type="submit"
-                              className="block w-full rounded-md bg-gradient-to-r from-teal-500 to-cyan-600 py-3 px-4 font-medium text-white shadow hover:from-teal-600 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-gray-900"
+                              className="block w-full rounded-md bg-gradient-to-r from-rose-400 via-fuchsia-500 to-indigo-500 py-3 px-6 font-medium text-white shadow hover:from-rose-500 hover:via-fuchsia-600 hover:to-indigo-600 focus:outline-none"
                             >
                               Sign up
                             </button>
@@ -304,10 +265,10 @@ const Homepage: React.FC = () => {
           <div className="relative bg-gray-50 pt-16 sm:pt-24 lg:pt-32">
             <div className="mx-auto max-w-md px-4 text-center sm:max-w-3xl sm:px-6 lg:max-w-7xl lg:px-8">
               <div>
-                <h2 className="text-base font-semibold uppercase tracking-wider text-cyan-600">
+                <h2 className="text-base font-semibold uppercase tracking-wider text-fuchsia-600">
                   Painless
                 </h2>
-                <p className="font-jakarta mt-2 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                <p className="mt-2 font-jakarta text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
                   WagPay Dashboard - Managing Payments made easy
                 </p>
                 <p className="mx-auto mt-5 max-w-prose text-xl text-gray-500">
@@ -319,7 +280,7 @@ const Homepage: React.FC = () => {
               <div className="mt-12 -mb-10 sm:-mb-24 lg:-mb-80">
                 <img
                   className="rounded-lg shadow-xl ring-1 ring-black ring-opacity-5"
-                  src="https://tailwindui.com/img/component-images/green-project-app-screenshot.jpg"
+                  src={'/images/temp.jpg'}
                   alt=""
                 />
               </div>
@@ -329,24 +290,24 @@ const Homepage: React.FC = () => {
           {/* Feature section with grid */}
           <div className="relative bg-white py-16 sm:py-24 lg:py-32">
             <div className="mx-auto max-w-md px-4 text-center sm:max-w-3xl sm:px-6 lg:max-w-7xl lg:px-8">
-              <h2 className="text-base font-semibold uppercase tracking-wider text-cyan-600">
+              <h2 className="text-base font-semibold uppercase tracking-wider text-fuchsia-600">
                 Accept Crypto Fastly
               </h2>
-              <p className="font-jakarta mt-2 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+              <p className="mt-2 font-jakarta text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
                 Everything you need to get started with crypto payments
               </p>
-              <p className="font-inter mx-auto mt-5 max-w-prose text-xl text-gray-500">
-                At WagPay, We have every feature that you will need to accept payments in crypto 
-                and track them, more features coming soon!
+              <p className="mx-auto mt-5 max-w-prose font-inter text-xl text-gray-500">
+                At WagPay, We have every feature that you will need to accept
+                payments in crypto and track them, more features coming soon!
               </p>
               <div className="mt-12">
                 <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
                   {features.map((feature) => (
                     <div key={feature.name} className="pt-6">
-                      <div className="font-inter flow-root rounded-lg bg-gray-50 px-6 pb-8 h-56">
+                      <div className="flow-root h-56 rounded-lg bg-gray-50 px-6 pb-8 font-inter">
                         <div className="-mt-6">
                           <div>
-                            <span className="inline-flex items-center justify-center rounded-md bg-gradient-to-r from-teal-500 to-cyan-600 p-3 shadow-lg">
+                            <span className="inline-flex items-center justify-center rounded-md bg-gradient-to-r from-rose-400 via-fuchsia-500 to-indigo-500 p-3 shadow-lg">
                               <feature.icon
                                 className="h-6 w-6 text-white"
                                 aria-hidden="true"
@@ -369,7 +330,10 @@ const Homepage: React.FC = () => {
           </div>
 
           {/* Testimonial section */}
-          <div id='claim' className="bg-gradient-to-r from-teal-500 to-cyan-600 pb-16 lg:relative lg:z-10 lg:pb-0">
+          <div
+            id="claim"
+            className="bg-gradient-to-r from-rose-400 via-fuchsia-500 to-indigo-500 pb-16 lg:relative lg:z-10 lg:pb-0"
+          >
             <div className="lg:mx-auto lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-8 lg:px-8">
               <div className="relative lg:-my-8">
                 <div
@@ -380,7 +344,7 @@ const Homepage: React.FC = () => {
                   <div className="aspect-w-10 aspect-h-6 sm:aspect-w-16 sm:aspect-h-7 lg:aspect-none overflow-hidden rounded-xl shadow-xl lg:h-full">
                     <div className="relative bg-white object-cover lg:h-full lg:w-full">
                       <div className="z-50 flex h-full w-full flex-col items-center justify-center space-y-5 bg-[#6C7EE1]/25 p-5">
-                        <h1 className="bg-gradient-to-r from-teal-500 to-cyan-600 bg-clip-text py-3 px-4 text-3xl font-bold text-transparent">
+                        <h1 className="bg-gradient-to-r from-rose-400 via-fuchsia-500 to-indigo-500 bg-clip-text py-3 px-4 text-3xl font-bold text-transparent">
                           Claim Username
                         </h1>
                         <input
@@ -399,7 +363,7 @@ const Homepage: React.FC = () => {
                             onChange={(e: any) => setUsername(e.target.value)}
                           />
                           <button
-                            className="w-1/3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 py-3 px-4 font-medium text-white shadow hover:from-teal-600 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-gray-900"
+                            className="w-1/3 rounded-xl bg-gradient-to-r from-rose-400 via-fuchsia-500 to-indigo-500 py-3 px-4 font-medium text-white shadow hover:from-rose-500 hover:via-fuchsia-600 hover:to-indigo-600 focus:outline-none"
                             onClick={() => checkUsername()}
                           >
                             Check
@@ -483,7 +447,7 @@ const Homepage: React.FC = () => {
                         )}
                         <button
                           onClick={() => submit()}
-                          className="w-full rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 py-3 px-4 font-medium text-white shadow hover:from-teal-600 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-gray-900"
+                          className="w-full rounded-xl bg-gradient-to-r from-rose-400 via-fuchsia-500 to-indigo-500 py-3 px-4 font-medium text-white shadow hover:from-rose-500 hover:via-fuchsia-600 hover:to-indigo-600 focus:outline-none"
                         >
                           Claim
                         </button>
@@ -526,7 +490,7 @@ const Homepage: React.FC = () => {
           <div className="relative bg-gray-50 py-16 sm:py-24 lg:py-32">
             <div className="relative">
               <div className="mx-auto max-w-md px-4 text-center sm:max-w-3xl sm:px-6 lg:max-w-7xl lg:px-8">
-                <h2 className="text-base font-semibold uppercase tracking-wider text-cyan-600">
+                <h2 className="text-base font-semibold uppercase tracking-wider text-fuchsia-600">
                   Learn
                 </h2>
                 <p className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
@@ -579,7 +543,7 @@ const Homepage: React.FC = () => {
               />
               <div
                 aria-hidden="true"
-                className="absolute inset-0 bg-gradient-to-r from-teal-500 to-cyan-600 mix-blend-multiply"
+                className="absolute inset-0 bg-gradient-to-r from-rose-400 via-fuchsia-500 to-indigo-500 mix-blend-multiply"
               />
             </div>
             <div className="relative mx-auto max-w-md px-4 py-12 sm:max-w-7xl sm:px-6 sm:py-20 md:py-28 lg:px-8 lg:py-32">
