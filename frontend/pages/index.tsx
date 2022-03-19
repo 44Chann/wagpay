@@ -15,12 +15,13 @@ import {
   CloudUploadIcon,
   CogIcon,
   LockClosedIcon,
-  MenuIcon,
-  RefreshIcon,
+  ViewGridIcon,
+  CreditCardIcon,
   ServerIcon,
-  ShieldCheckIcon,
-  XIcon,
-  PaperAirplaneIcon
+  BellIcon,
+  TerminalIcon,
+  GlobeIcon,
+  DocumentTextIcon
 } from '@heroicons/react/outline'
 import { ChevronRightIcon, ExternalLinkIcon } from '@heroicons/react/solid'
 
@@ -42,37 +43,37 @@ const features = [
     name: 'Payment Pages',
     description:
       'Easily receive payments in multiple cryptocurrencies like ETH, USDC, SOL and more coming soon',
-    icon: CloudUploadIcon,
+    icon: DocumentTextIcon,
   },
   {
     name: 'International Payments',
     description:
       'Receive Cryptocurrencies from anywhere in the world with 0 fees and *superfast speed',
-    icon: PaperAirplaneIcon,
+    icon: GlobeIcon,
   },
   {
     name: 'Powerful Dashboard to track payments',
     description:
       'WagPay provides a very powerful dashboard with each and every data point that your business needs',
-    icon: RefreshIcon,
+    icon: ViewGridIcon,
   },
   {
-    name: 'Zero Fees',
+    name: 'Zero Fees & No Credit Card Required',
     description:
       "WagPay doesn't charge any fees to access dashboard or on your cryptocurrency payments",
-    icon: ShieldCheckIcon,
+    icon: CreditCardIcon,
   },
   {
     name: 'Great SDK',
     description:
       'Get Access to a powerful SDK with which you can directly integrate cryptocurrencies payments from your own store (coming soon)',
-    icon: CogIcon,
+    icon: TerminalIcon,
   },
   {
     name: 'Receive Notifications',
     description:
       'Receive Emails on every successful purchase with a generated invoice',
-    icon: ServerIcon,
+    icon: BellIcon,
   },
 ]
 
@@ -222,10 +223,10 @@ const Homepage: React.FC = () => {
       <Head>
         <title>WagPay</title>
       </Head>
-      <div className="h-full w-full">
+      <div className="font-inter h-full w-full">
         <Navbar />
         <main>
-          <div className="bg-gray-900 pt-10 sm:pt-16 lg:overflow-hidden lg:pt-8 lg:pb-14">
+          <div className="bg-gray-900 pt-10 sm:pt-16 lg:overflow-hidden lg:pt-8 lg:pb-14 ">
             <div className="mx-auto max-w-7xl lg:px-8">
               <div className="lg:grid lg:grid-cols-2 lg:gap-8">
                 <div className="mx-auto max-w-md px-4 sm:max-w-2xl sm:px-6 sm:text-center lg:flex lg:items-center lg:px-0 lg:text-left">
@@ -243,7 +244,7 @@ const Homepage: React.FC = () => {
                         aria-hidden="true"
                       />
                     </a>
-                    <h1 className="font-jakarta mt-4 text-4xl font-extrabold tracking-tight text-white sm:mt-5 sm:text-6xl lg:mt-6 xl:text-6xl">
+                    <h1 className="font-jakarta space-y-2 mt-4 text-4xl font-black tracking-tight text-white sm:mt-5 sm:text-6xl lg:mt-6 xl:text-6xl">
                       <span className="block">
                         Next generation payment gateway
                       </span>
@@ -282,9 +283,6 @@ const Homepage: React.FC = () => {
                             </button>
                           </div>
                         </div>
-                        <p className="mt-3 text-sm text-gray-300 sm:mt-4">
-                          Claim your wagpay username above
-                        </p>
                       </form>
                     </div>
                   </div>
@@ -345,7 +343,7 @@ const Homepage: React.FC = () => {
                 <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
                   {features.map((feature) => (
                     <div key={feature.name} className="pt-6">
-                      <div className="font-inter flow-root rounded-lg bg-gray-50 px-6 pb-8">
+                      <div className="font-inter flow-root rounded-lg bg-gray-50 px-6 pb-8 h-56">
                         <div className="-mt-6">
                           <div>
                             <span className="inline-flex items-center justify-center rounded-md bg-gradient-to-r from-teal-500 to-cyan-600 p-3 shadow-lg">

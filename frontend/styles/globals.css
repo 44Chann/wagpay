@@ -8,6 +8,11 @@
 }
 
 @font-face {
+  font-family: 'Holtz';
+  src: url('/fonts/Holtzberg-Regular.otf');
+}
+
+@font-face {
   font-family: 'Edds';
   src: url('/fonts/EudoxusSans-ExtraBold.woff2');
 }
@@ -17,16 +22,12 @@
   src: url('/fonts/PlusJakartaSans-ExtraBold.woff2');
 }
 
-/* .wallet-adapter-button {
-	background: transparent !important;
-	width: 100% !important;
-	padding: 5px !important;
-	display: flex !important;
-	justify-content: center !important;
-	align-items: center !important;
-	border-width: 1px !important;
-	border-color: black !important;
-	border-radius: 10px !important;
-	font-family: 'Urbanist' !important;
-	color: black !important;
-} */
+.bg-gradient {
+	background: rgb(157, 78, 221);
+	background: radial-gradient(
+		ellipse at top left,
+		rgba(157, 78, 221, 1) 0%,
+		rgba(0, 0, 0, 1) 40%,
+		rgba(0, 8, 20, 1) 100%
+	);
+}

@@ -11,6 +11,7 @@ module.exports = {
         eds: ['Eds', 'sans-serif'],
         edds: ['Edds', 'sans-serif'],
         jakarta: ['Jakarta', 'sans-serif'],
+        holtz: ['Holtz', 'sans-serif'],
       },
     },
   },
