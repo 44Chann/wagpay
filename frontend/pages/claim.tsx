@@ -5,11 +5,10 @@ import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { WalletConnectButton } from '@solana/wallet-adapter-react-ui'
 import { useWallet } from '@solana/wallet-adapter-react'
 import 'react-toastify/dist/ReactToastify.css'
-import { ToastContainer, toast } from 'react-toastify'
+import toast from 'react-hot-toast'
 import { useSignMessage } from 'wagmi'
 
 const Claim = () => {
-  toast.configure()
   const [{ data: connectData, error: connectError }, connect] = useConnect()
   const [{ data: accountData }, disconnect] = useAccount({
     fetchEns: true,
@@ -38,6 +37,7 @@ const Claim = () => {
   useEffect(() => {
     console.log(query)
     setUsername(query.username as string)
+    if(query.username) checkUsername(query.username as string)
   }, [query])
 
   useEffect(() => {
@@ -73,16 +73,16 @@ const Claim = () => {
       })
   }
 
-  const checkUsername = async () => {
-    let url = `/api/user/check_username?username=${username}`
-
+  const checkUsername = async (user?: string) => {
+    let url = `/api/user/check_username?username=${username ? username : user}`
+    
     fetch(url)
       .then((res) => res.json())
       .then((data) => {
         if (data['is_available']) {
-          toast.success('Its Available')
+          toast.success(`${username ? username : user} is Available`)
         } else {
-          toast.error('Not Available')
+          toast.error(`${username ? username : user} is not Available`)
         }
       })
   }

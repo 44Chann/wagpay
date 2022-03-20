@@ -15,6 +15,7 @@ import QRCodeStyling, {
 	CornerDotType,
 	Options
 } from "qr-code-styling";
+import { toast } from "material-react-toastify"
 
 interface Page {
 	id: number
@@ -37,14 +38,20 @@ interface Props {
 }
 
 export const getServerSideProps = async (context: any) => {
-	const res = await fetch(`https://wagpay.vercel.app/api/pages/${context.params.store}`)
-	console.log(`https://wagpay.vercel.app/api/pages/${context.params.store}`)
-	// console.log(await res.json())
-	const store: Page = await res.json()
-
-	return {
-		props: {
-			store: store
+	try {
+		const res = await fetch(`https://wagpay.vercel.app/api/pages/${context.params.store}`)
+		const store: Page = await res.json()
+		return {
+			props: {
+				store: store
+			}
+		}
+	} catch (e) {
+		return {
+			redirect: {
+				permanent: false,
+				destination: `/claim?username=${context.params.store}`
+			}
 		}
 	}
 }
