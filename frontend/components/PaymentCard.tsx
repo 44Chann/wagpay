@@ -9,6 +9,11 @@ import { ethers } from "ethers";
 import { ExternalProvider } from "@ethersproject/providers";
 import * as splToken from '@solana/spl-token/src'
 import toast from 'react-hot-toast'
+import Web3Modal from 'web3modal'
+import WalletConnectProvider from '@walletconnect/web3-provider'
+import Authereum from "authereum";
+
+const INFURA_ID = '460f40a260564ac4a4f4b3fffb032dad'
 
 type supported_currencies = 'Ethereum' | 'Solana' | 'USDC (Ethereum)'
 
@@ -57,7 +62,33 @@ const PaymentCard = ({ setURL, fields, createTransaction, updateTransaction, set
 			await window.solana.connect()
 			setSOL(window.solana.publicKey.toString())
 		} catch (e) {
-			console.log(e)
+			throw e
+		}
+	}
+
+	const connectETH = async () => {
+		const providerOptions = {
+			walletconnect: {
+				package: WalletConnectProvider, // required
+				options: {
+					infuraId: INFURA_ID, // required
+				}
+			},
+			authereum: {
+				package: Authereum // required
+			}
+		}
+
+		const web3modal = new Web3Modal({
+			providerOptions,
+		})
+
+		try {
+			const provider = await web3modal.connect()
+			console.log(provider, 'PROVIDER')
+			return provider
+		} catch (e) {
+			throw e
 		}
 	}
 
@@ -227,6 +258,7 @@ const PaymentCard = ({ setURL, fields, createTransaction, updateTransaction, set
 				} catch(e) {
 					toast.dismiss(toastIdConnect)
 					toast.error('Solana Wallet Not Connected')
+					return
 				}
 				const solProvider = window.solana
 				const solConnection = new Connection(clusterApiUrl('mainnet-beta'))
@@ -271,10 +303,18 @@ const PaymentCard = ({ setURL, fields, createTransaction, updateTransaction, set
 			var toastTransact, toastConnect
 			
 			toastConnect = toast.loading('Connecting Ethereum Wallet')
-			const account = await connectData.connectors.find(connector => connector.name.toLowerCase() === wallet.toLowerCase())?.connect()
-			setETH(account?.account as string)
-			const ethProvider = new ethers.providers.Web3Provider(window.ethereum as ExternalProvider);
+			try {
+				var pr = await connectETH()
+				console.log(pr)
+			} catch(e) {
+				toast.dismiss(toastConnect)
+				toast.error("Can't connect to Wallet")
+				return
+			}
+			const ethProvider = new ethers.providers.Web3Provider(pr)
 			const signer = ethProvider.getSigner()
+			const address = await signer.getAddress()
+			setETH(address)
 			toast.dismiss(toastConnect)
 			toast.success('Successfully Connected to ' + wallet)
 
@@ -286,27 +326,35 @@ const PaymentCard = ({ setURL, fields, createTransaction, updateTransaction, set
 					value: ethers.utils.parseEther(price.toFixed(5))
 				})
 				
-				var txId = await createTransaction(email, fields, account?.account, '')
+				var txId = await createTransaction(email, fields, address, '')
 				console.log(tx)
 				await updateTransaction(txId, true, tx.hash)
 				toast.dismiss(toastTransact)
 				toast.success('Successfully sent Transaction')
 				return tx
 			} catch (e) {
-				let txId = await createTransaction(email, fields, account?.account, '')
+				let txId = await createTransaction(email, fields, address, '')
 				await updateTransaction(txId, false, '')
 				toast.dismiss(toastTransact)
-				toast.success('Transaction not successful')
+				toast.error('Transaction not successful')
 				console.log("WagPay: Can't send transaction!", e)
 			}
 		} else if (option.toLowerCase() === 'usdc (ethereum)') {
 			var toastTransact, toastConnect
 			try {
 				toastConnect = toast.loading('Connecting Ethereum Wallet')
-				const account = await connectData.connectors.find(connector => connector.name.toLowerCase() === wallet.toLowerCase())?.connect()
-				setETH(account?.account as string)
-				const ethProvider = new ethers.providers.Web3Provider(window.ethereum as ExternalProvider);
+				try {
+					var pr = await connectETH()
+					console.log(pr)
+				} catch(e) {
+					toast.dismiss(toastConnect)
+					toast.error("Can't connect to Wallet")
+					return
+				}
+				const ethProvider = new ethers.providers.Web3Provider(pr)
 				const signer = ethProvider.getSigner()
+				const address = await signer.getAddress()
+				setETH(address)
 				toast.dismiss(toastConnect)
 				toast.success('Successfully Connected to ' + wallet)
 
@@ -324,7 +372,7 @@ const PaymentCard = ({ setURL, fields, createTransaction, updateTransaction, set
 				await tx.wait()
 				toast.dismiss(toastTransact)
 				toast.success('Transaction Succesful')
-				var txId = await createTransaction(email, fields, account?.account, '')
+				var txId = await createTransaction(email, fields, address, '')
 				console.log(tx)
 				await updateTransaction(txId, true, tx.hash)
 			} catch (e) {
@@ -365,9 +413,9 @@ const PaymentCard = ({ setURL, fields, createTransaction, updateTransaction, set
 	return (
 		<div className='w-full lg:w-1/2 h-full font-urban flex flex-col justify-center items-center lg:items-end space-y-10'>
 			<div className="font-urban shadow-xl relative w-[300px] xl:w-[449px] h-[545px] rounded-xl mt-10 flex flex-col justify-center items-center overflow-hidden">
-				<div className="select-none blur-3xl w-96 h-96 -top-20 -left-36 absolute bg-[#FFA8D5]/50 rounded-full"></div>
-				<div className="select-none blur-3xl w-96 h-96 -bottom-20 -right-36 absolute bg-[#6C7EE1]/50 rounded-full"></div>
-				<div className='z-50 w-full h-full p-5 flex flex-col justify-center items-center space-y-5'>
+				<div className="-z-50 select-none blur-3xl w-96 h-96 -top-20 -left-36 absolute bg-[#FFA8D5]/50 rounded-full"></div>
+				<div className="-z-50 select-none blur-3xl w-96 h-96 -bottom-20 -right-36 absolute bg-[#6C7EE1]/50 rounded-full"></div>
+				<div className='w-full h-full p-5 flex flex-col justify-center items-center space-y-5'>
 					<h1 className='text-2xl font-bold'>WagPay</h1>
 					<div className="bg-white opacity-80 flex justify-between w-full  rounded-xl">
 						<input value={email} onChange={(e) => setEmail(e.target.value)}  type='email' placeholder="Email" className="font-semibold rounded-xl w-full pl-4 py-4 opacity-80 border-0 outline-none text-sm" required />
