@@ -15,7 +15,6 @@ import QRCodeStyling, {
 	CornerDotType,
 	Options
 } from "qr-code-styling";
-import { toast } from "material-react-toastify"
 
 interface Page {
 	id: number
